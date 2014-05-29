@@ -82,9 +82,9 @@
   }
 
   .user_stats {
-    @include block-grid(3, $spacing: 0);
     border: rem-calc(1) solid lighten($secondary_gray, 30%);
     margin: rem-calc(20 0 20 0);
+    padding-top: 0;
 
     h3 {
       margin: 0;
@@ -100,6 +100,9 @@
     li {
       background: #fff;
       border-right: rem-calc(1) solid lighten($secondary_gray, 30%);
+      padding-bottom: 0;
+      padding-right: 0;
+      padding-left: 0;
 
       &:last-child {
         border-right: none;
