@@ -27,4 +27,15 @@ module ProfileHelper
       ].join.html_safe
     end
   end
+
+  def setup_user(user)
+    (SystemEmail.all - user.system_emails).each do |system_email|
+      user.email_preferences.build(system_email: system_email)
+    end
+    user
+  end
+
+  def sorted_email_preferences(user)
+    user.email_preferences.sort_by { |ep| ep.system_email.name }
+  end
 end

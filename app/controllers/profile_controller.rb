@@ -53,7 +53,11 @@ class ProfileController < ApplicationController
       :twitter_username,
       :irc_nickname,
       :jira_username,
-      email_preferences: []
+      email_preferences_attributes: [
+        :_destroy,
+        :system_email_id,
+        :id
+      ]
     )
   end
 

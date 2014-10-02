@@ -11,7 +11,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140930215139) do
+ActiveRecord::Schema.define(version: 20141002202738) do
+
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
 
   create_table "accounts", force: true do |t|
     t.integer  "user_id"
@@ -259,6 +262,17 @@ ActiveRecord::Schema.define(version: 20140930215139) do
     t.string   "callback_url", null: false
   end
 
+  create_table "email_preferences", force: true do |t|
+    t.integer  "user_id",         null: false
+    t.string   "token",           null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "system_email_id", null: false
+  end
+
+  add_index "email_preferences", ["system_email_id"], name: "index_email_preferences_on_system_email_id", using: :btree
+  add_index "email_preferences", ["token"], name: "index_email_preferences_on_token", using: :btree
+
   create_table "hits", force: true do |t|
     t.string  "label",             null: false
     t.integer "total", default: 0, null: false
@@ -322,6 +336,12 @@ ActiveRecord::Schema.define(version: 20140930215139) do
 
   add_index "supported_platforms", ["name", "version_constraint"], name: "index_supported_platforms_on_name_and_version_constraint", unique: true, using: :btree
 
+  create_table "system_emails", force: true do |t|
+    t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "tools", force: true do |t|
     t.integer  "user_id"
     t.string   "name"
@@ -363,7 +383,6 @@ ActiveRecord::Schema.define(version: 20140930215139) do
     t.text     "public_key"
     t.boolean  "email_notifications", default: true
     t.string   "install_preference"
-    t.integer  "email_preferences"
   end
 
 end

@@ -18,7 +18,12 @@ class User < ActiveRecord::Base
   has_many :collaborated_cookbooks, through: :collaborators, source: :resourceable, source_type: 'Cookbook'
   has_many :tools
   has_many :collaborated_tools, through: :collaborators, source: :resourceable, source_type: 'Tool'
+  has_many :email_preferences
+  has_many :system_emails, through: :email_preferences
   has_one :chef_account, -> { self.for('chef_oauth2') }, class_name: 'Account'
+
+  accepts_nested_attributes_for :email_preferences,
+                                allow_destroy: true
 
   # Validations
   # --------------------
@@ -31,7 +36,7 @@ class User < ActiveRecord::Base
 
   # Callbacks
   # --------------------
-  before_create :default_email_preferences
+  after_create :default_email_preferences
 
   # Search
   # --------------------
@@ -51,9 +56,9 @@ class User < ActiveRecord::Base
     }
   )
 
-  bitmask :email_preferences,
-          as: [:new_version, :deleted, :deprecated],
-          zero_value: :none
+  # bitmask :email_preferences,
+  #         as: [:new_version, :deleted, :deprecated],
+  #         zero_value: :none
 
   #
   # Returns all +CookbookVersion+ instances that +User+ follows.
@@ -367,6 +372,6 @@ class User < ActiveRecord::Base
   # This sets up a default preference of all emails for new users.
   #
   def default_email_preferences
-    self.email_preferences = [:new_version, :deleted, :deprecated] if email_preferences.blank?
+    EmailPreference.default_set_for_user(self) if email_preferences.blank?
   end
 end
