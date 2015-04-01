@@ -42,6 +42,7 @@ class Curry::PullRequestAnnotator
 
     if unauthorized_commit_authors.empty?
       actions << Curry::AddAuthorizedLabel.new(@octokit, @pull_request)
+      actions << Curry::AddAuthorizedStatus.new(@octokit, @pull_request)
 
       if comment.required_authorization?
         actions << Curry::AuthorizedCommitAuthorComment.new(
@@ -52,6 +53,7 @@ class Curry::PullRequestAnnotator
       end
     else
       actions << Curry::RemoveAuthorizedLabel.new(@octokit, @pull_request)
+      actions << Curry::AddUnauthorizedStatus.new(@octokit, @pull_request)
 
       if comment.addressed_only?(unauthorized_commit_authors)
         actions << Curry::UpdateUnauthorizedCommitAuthorComment.new(comment)
