@@ -107,6 +107,8 @@ Supermarket::Application.routes.draw do
     resources :accounts, only: [:destroy]
   end
 
+  resources :groups
+
   resources :tools, constraints: proc { ROLLOUT.active?(:tools) } do
     member do
       post :adoption

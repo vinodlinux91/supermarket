@@ -20,6 +20,10 @@ feature 'groups management' do
       click_link('Groups')
     end
 
+    it 'shows the Your Groups header' do
+      expect(page).to have_content('Your Groups')
+    end
+
     it 'shows the Create Group link' do
       expect(page).to have_link('Create Group')
     end
@@ -39,7 +43,6 @@ feature 'groups management' do
 
         it 'shows the group view'
       end
-
     end
   end
 end
