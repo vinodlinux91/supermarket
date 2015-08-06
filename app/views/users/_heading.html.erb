@@ -5,7 +5,7 @@
     <div class="buttons">
       <%= link_to "Cookbooks", user, class: "button radius secondary #{'active' if active == 'cookbooks'}", rel: "view_cookbooks" %>
       <%= link_to "Tools & Plugins", tools_user_path(user), class: "button radius secondary #{'active' if active == 'tools'}", rel: "view_tools" %>
-      <%= link_to "Groups", groups_path, class: "button radius secondary" %>
+      <%= link_to "Groups", groups_user_path(user), class: "button radius secondary" %>
     </div>
   <% end %>
 </div>

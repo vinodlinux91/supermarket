@@ -98,6 +98,7 @@ Supermarket::Application.routes.draw do
   resources :users, only: [:show] do
     member do
       get :tools, constraints: proc { ROLLOUT.active?(:tools) }
+      get :groups
 
       put :make_admin
       delete :revoke_admin

@@ -58,6 +58,24 @@ describe UsersController do
     end
   end
 
+  describe 'GET #groups' do
+    it 'assigns a user' do
+      get :groups, id: user.username
+      expect(assigns[:user]).to eql(user)
+    end
+
+    context 'finding a user\'s groups' do
+      let!(:group_1) { create(:group) }
+      let!(:group_2) { create(:group) }
+
+      # Eventually this will only be groups a user is a member of
+      it 'includes all groups' do
+        get :groups, id: user.username
+        expect(assigns(:groups)).to include(group_1, group_2)
+      end
+    end
+  end
+
   describe 'GET #followed_cookbook_activity' do
     it 'assigns a user' do
       get :tools, id: user.username
