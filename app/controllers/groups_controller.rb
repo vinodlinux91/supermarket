@@ -5,9 +5,13 @@ class GroupsController < ApplicationController
 
   def create
     @group = Group.new(group_params)
-    @group.save!
-    flash[:notice] = 'Group successfully created!'
-    redirect_to group_path(@group)
+    if @group.save
+      flash[:notice] = 'Group successfully created!'
+      redirect_to group_path(@group)
+    else
+      flash[:error] = 'An error has occurred'
+      redirect_to new_group_path
+    end
   end
 
   def show

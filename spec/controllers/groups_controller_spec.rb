@@ -32,7 +32,7 @@ describe GroupsController do
 
         before do
           allow(Group).to receive(:new).and_return(group)
-          allow(group).to receive(:save!).and_return(true)
+          allow(group).to receive(:save).and_return(true)
         end
 
         it 'shows a success message' do
@@ -40,7 +40,7 @@ describe GroupsController do
           expect(flash[:notice]).to include('Group successfully created!')
         end
 
-        it 'renders the group show template' do
+        it 'rendirects to the group show template' do
           post :create, group: group_input
           expect(response).to redirect_to(group_path(assigns[:group]))
         end
@@ -51,17 +51,29 @@ describe GroupsController do
           { name: '' }
         end
 
-        let(:group) { create(:group) }
-
-        before do
-          allow(Group).to receive(:new).and_return(group)
-          allow(group).to receive(:save!).and_return(false)
+        it 'does not save the group to the database' do
+          expect{
+            post :create, group: group_input
+          }.to change(Group, :count).by(0)
         end
 
-        it 'does not save the group to the database'
+        context "after the save" do
+          let(:group) { create(:group) }
 
-        it 're-renders the new group template' do
-          post :create, group: group_input
+          before do
+            allow(Group).to receive(:new).and_return(group)
+            allow(group).to receive(:save).and_return(false)
+          end
+
+          it 'shows an error' do
+            post :create, group: group_input
+            expect(flash[:error]).to include('An error has occurred')
+          end
+
+          it 'redirects to the new group template' do
+            post :create, group: group_input
+            expect(response).to redirect_to(new_group_path)
+          end
         end
       end
     end

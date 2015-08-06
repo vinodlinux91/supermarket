@@ -42,9 +42,18 @@ feature 'groups management' do
       end
 
       context 'when the create is not successful' do
-        it 'shows an error message'
+        before do
+          fill_in('Group Name', with: '')
+          click_button('Create Group')
+        end
 
-        it 'shows the new group form'
+        it 'shows an error message' do
+          expect(page).to have_content('An error has occured')
+        end
+
+        it 'shows the new group form' do
+          expect(page).to have_field('Group Name')
+        end
       end
 
       context 'when the create is successful' do
