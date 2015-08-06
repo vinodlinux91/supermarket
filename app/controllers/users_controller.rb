@@ -42,7 +42,6 @@ class UsersController < ApplicationController
     @groups = Group.all
   end
 
-
   #
   # GET /users/:id/followed_cookbook_activity
   #

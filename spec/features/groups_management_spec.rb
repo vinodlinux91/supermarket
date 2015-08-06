@@ -21,7 +21,7 @@ feature 'groups management' do
     end
 
     it 'shows the Your Groups header' do
-      expect(page).to have_content('Your Groups')
+      expect(page).to have_content("#{user.name}'s Groups")
     end
 
     it 'shows the Create Group link' do
@@ -30,7 +30,7 @@ feature 'groups management' do
 
     describe 'user clicks the Create Group link' do
       it 'shows the new group form'
-        #expect(page).to have_field("Group Name")
+      # expect(page).to have_field("Group Name")
 
       context 'when the group info is not valid' do
         it 'shows an error message'
