@@ -1,2 +1,12 @@
-<%= "#{posessivize(@user.name)} Groups" %>
-<%= link_to "Create Group", new_group_path %>
+<%= provide(:title, "#{@user.username}") %>
+<%= provide(:description, "#{@user.username}'s Groups.") %>
+
+
+<div class="page profile" data-equalizer>
+  <%= render 'sidebar' %>
+
+  <div class="main" data-equalizer-watch>
+    <%= render 'heading', user: @user, title: "#{posessivize(@user.name)} Groups", active: 'groups' %>
+    <%= link_to "Create Group", new_group_path, class: 'button medium radius' %>
+  </div>
+</div>
