@@ -67,7 +67,7 @@ describe GroupsController do
 
           it 'shows an error' do
             post :create, group: group_input
-            expect(flash[:error]).to include('An error has occurred')
+            expect(flash[:warning]).to include('An error has occurred')
           end
 
           it 'redirects to the new group template' do

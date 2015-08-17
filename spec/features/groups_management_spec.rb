@@ -48,7 +48,7 @@ feature 'groups management' do
         end
 
         it 'shows an error message' do
-          expect(page).to have_content('An error has occured')
+          expect(page).to have_content('An error has occurred')
         end
 
         it 'shows the new group form' do
