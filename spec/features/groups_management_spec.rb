@@ -15,6 +15,8 @@ feature 'groups management' do
   end
 
   describe 'user clicks the Groups link' do
+    let!(:existing_group) { create(:group) }
+
     before do
       visit user_path(user)
       click_link('Groups')
@@ -27,6 +29,12 @@ feature 'groups management' do
     it 'shows the Create Group link' do
       expect(page).to have_link('Create Group')
     end
+
+    it 'shows the groups the member is a part of' do
+      expect(page).to have_content(existing_group.name)
+    end
+
+    it 'does not show the groups the member is not a part of'
 
     describe 'user clicks the Create Group link' do
       before do
@@ -58,7 +66,7 @@ feature 'groups management' do
 
       context 'when the create is successful' do
         before do
-          fill_in('Group Name', with: 'My Group')
+          fill_in('Group Name', with: 'My Next Group')
           click_button('Create Group')
         end
 
@@ -67,7 +75,7 @@ feature 'groups management' do
         end
 
         it 'shows the group' do
-          expect(page).to have_content('My Group')
+          expect(page).to have_content('My Next Group')
         end
       end
     end

@@ -8,5 +8,9 @@
   <div class="main" data-equalizer-watch>
     <%= render 'heading', user: @user, title: "#{posessivize(@user.name)} Groups", active: 'groups' %>
     <%= link_to "Create Group", new_group_path, class: 'button medium radius' %>
+
+    <% @groups.each do |group| %>
+      <%= group.name %>
+    <% end %>
   </div>
 </div>
