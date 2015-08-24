@@ -77,6 +77,16 @@ feature 'groups management' do
         it 'shows the group' do
           expect(page).to have_content('My Next Group')
         end
+
+        it 'shows a list of members' do
+          expect(page).to have_content('Members')
+        end
+
+        it 'shows the user as a member' do
+          puts user.inspect
+          expect(page).to have_content(user.username)
+          expect(page).to have_content(user.first_name)
+        end
       end
     end
   end

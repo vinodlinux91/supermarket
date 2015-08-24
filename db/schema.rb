@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150804213215) do
+ActiveRecord::Schema.define(version: 20150824210000) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -284,6 +284,13 @@ ActiveRecord::Schema.define(version: 20150804213215) do
 
   add_index "email_preferences", ["token"], name: "index_email_preferences_on_token", unique: true, using: :btree
   add_index "email_preferences", ["user_id", "system_email_id"], name: "index_email_preferences_on_user_id_and_system_email_id", unique: true, using: :btree
+
+  create_table "group_members", force: true do |t|
+    t.integer  "group_id"
+    t.integer  "user_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "groups", force: true do |t|
     t.string   "name"

@@ -1,6 +1,11 @@
 require 'spec_helper'
 
 describe Group do
+  context 'associations' do
+    it { should have_many(:group_members) }
+    it { should have_many(:members) }
+  end
+
   it 'requires a name' do
     group = Group.new(name: '')
     expect(group).to_not be_valid
