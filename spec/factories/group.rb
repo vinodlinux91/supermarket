@@ -1,5 +1,5 @@
 FactoryGirl.define do
   factory :group do
-    name 'My Group'
+    sequence(:name) { |n| "My Group #{n}" }
   end
 end

@@ -68,10 +68,21 @@ describe UsersController do
       let!(:group_1) { create(:group) }
       let!(:group_2) { create(:group) }
 
-      # Eventually this will only be groups a user is a member of
-      it 'includes all groups' do
+      before do
+        user.memberships << group_1
+
+        expect(user.memberships).to include(group_1)
+        expect(user.memberships).to_not include(group_2)
+      end
+
+      it 'includes all groups user is a member of' do
         get :groups, id: user.username
-        expect(assigns(:groups)).to include(group_1, group_2)
+        expect(assigns(:groups)).to include(group_1)
+      end
+
+      it 'does not include groups user is NOT a member of' do
+        get :groups, id: user.username
+        expect(assigns(:groups)).to_not include(group_2)
       end
     end
   end

@@ -15,8 +15,6 @@ feature 'groups management' do
   end
 
   describe 'user clicks the Groups link' do
-    let!(:existing_group) { create(:group) }
-
     before do
       visit user_path(user)
       click_link('Groups')
@@ -29,12 +27,6 @@ feature 'groups management' do
     it 'shows the Create Group link' do
       expect(page).to have_link('Create Group')
     end
-
-    it 'shows the groups the member is a part of' do
-      expect(page).to have_content(existing_group.name)
-    end
-
-    it 'does not show the groups the member is not a part of'
 
     describe 'user clicks the Create Group link' do
       before do
@@ -83,7 +75,6 @@ feature 'groups management' do
         end
 
         it 'shows the user as a member' do
-          puts user.inspect
           expect(page).to have_content(user.username)
           expect(page).to have_content(user.first_name)
           expect(page).to have_content(user.last_name)

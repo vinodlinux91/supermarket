@@ -38,8 +38,7 @@ class UsersController < ApplicationController
   # Display a user and their groups
   #
   def groups
-    # Eventually, this should only be the user's groups
-    @groups = Group.all
+    @groups = @user.memberships
   end
 
   #
