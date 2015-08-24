@@ -86,6 +86,7 @@ feature 'groups management' do
           puts user.inspect
           expect(page).to have_content(user.username)
           expect(page).to have_content(user.first_name)
+          expect(page).to have_content(user.last_name)
         end
       end
     end

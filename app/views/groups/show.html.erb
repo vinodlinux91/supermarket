@@ -4,5 +4,10 @@
     <%= @group.name %>
   </h1>
 
-  <h1>Members</h1>
+  <h2>Members</h2>
+  <% @members.each do |member| %>
+    <%= member.username %>
+    <%= member.first_name %>
+    <%= member.last_name %>
+  <% end %>
 </div>

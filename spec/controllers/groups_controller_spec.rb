@@ -96,12 +96,32 @@ describe GroupsController do
 
   describe 'GET #show' do
     let(:group) { create(:group) }
+    let(:user) { create(:user) }
+
+    before do
+      group.members << user
+    end
 
     it 'finds the correct group' do
       get :show, id: group
       expect(assigns(:group)).to eq(group)
     end
 
+    context 'listing group members' do
+
+      it 'includes users who are members' do
+        get :show, id: group
+        expect(assigns(:members)).to include(user)
+      end
+
+      it 'does not include users who are not members' do
+        user2 = create(:user)
+
+        get :show, id: group
+        expect(assigns(:members)).to_not include(user2)
+      end
+
+    end
     it 'renders the group show template' do
       get :show, id: group
       expect(response).to render_template('show')
