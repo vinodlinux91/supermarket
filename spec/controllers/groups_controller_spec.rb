@@ -44,6 +44,21 @@ describe GroupsController do
           post :create, group: group_input
           expect(response).to redirect_to(group_path(assigns[:group]))
         end
+
+        context 'group members' do
+          let(:user) { create(:user) }
+
+          before do
+            allow(controller).to receive(:current_user).and_return(user)
+          end
+
+          it 'adds the creating user as a member' do
+            post :create, group: group_input
+            expect(Group.last.members).to include(user)
+          end
+
+          it 'sets the creating user as an admin member'
+        end
       end
 
       context 'with invalid input' do
