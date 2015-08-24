@@ -5,9 +5,9 @@
   </h1>
 
   <h2>Members</h2>
-  <% @members.each do |member| %>
-    <%= member.username %>
-    <%= member.first_name %>
-    <%= member.last_name %>
+  <% if @members.any? %>
+    <ul class="listing">
+      <%= render partial: 'member', collection: @members %>
+    </ul>
   <% end %>
 </div>
