@@ -79,6 +79,13 @@ feature 'groups management' do
           expect(page).to have_content(user.first_name)
           expect(page).to have_content(user.last_name)
         end
+
+        it 'shows the group on the user\'s groups profile page' do
+          expect(page).to have_link('View Profile')
+          click_link('View Profile')
+          click_link('Groups')
+          expect(page).to have_content(Group.last.name)
+        end
       end
     end
   end
