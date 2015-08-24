@@ -10,7 +10,7 @@
     <%= link_to "Create Group", new_group_path, class: 'button medium radius' %>
 
     <% @groups.each do |group| %>
-      <%= group.name %>
+      <%= link_to group.name, group_path(group) %>
     <% end %>
   </div>
 </div>
