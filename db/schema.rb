@@ -288,6 +288,7 @@ ActiveRecord::Schema.define(version: 20150824210000) do
   create_table "group_members", force: true do |t|
     t.integer  "group_id"
     t.integer  "user_id"
+    t.boolean  "admin"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
