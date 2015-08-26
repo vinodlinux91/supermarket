@@ -6,7 +6,7 @@
 
   <h2>Members</h2>
   <% if @members.any? %>
-    <ul class="listing">
+    <ul class="listing" id="members">
       <%= render partial: 'member', collection: @members %>
     </ul>
   <% end %>

@@ -75,9 +75,9 @@ feature 'groups management' do
         end
 
         it 'shows the user as a member' do
-          expect(page).to have_content(user.username)
-          expect(page).to have_content(user.first_name)
-          expect(page).to have_content(user.last_name)
+          within('ul#members') do
+            expect(page).to have_content(user.username)
+          end
         end
 
         context 'showing the group on the user\'s groups profile page' do
