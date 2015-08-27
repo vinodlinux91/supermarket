@@ -28,9 +28,7 @@ describe GroupsController do
       end
 
       it 'saves the new group to the database' do
-        expect{
-          post :create, group: group_input
-        }.to change(Group, :count).by(1)
+        expect { post :create, group: group_input }.to change(Group, :count).by(1)
       end
 
       context 'after the save' do
@@ -70,12 +68,10 @@ describe GroupsController do
         end
 
         it 'does not save the group to the database' do
-          expect{
-            post :create, group: group_input
-          }.to change(Group, :count).by(0)
+          expect { post :create, group: group_input }.to change(Group, :count).by(0)
         end
 
-        context "after the save" do
+        context 'after the save' do
           let(:group) { create(:group) }
 
           before do
@@ -155,7 +151,6 @@ describe GroupsController do
         expect(assigns(:members)).to_not include(admin_user)
       end
     end
-
 
     it 'renders the group show template' do
       get :show, id: group

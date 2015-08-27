@@ -38,9 +38,7 @@ describe GroupMembersController do
       end
 
       it 'saves the new group member to the database' do
-        expect{
-          post :create, group_member: input
-        }.to change(GroupMember, :count).by(1)
+        expect { post :create, group_member: input }.to change(GroupMember, :count).by(1)
       end
 
       context 'after the save' do
@@ -71,9 +69,7 @@ describe GroupMembersController do
       end
 
       it 'does not save the group to the database' do
-        expect{
-          post :create, group_member: invalid_input
-        }.to change(GroupMember, :count).by(0)
+        expect { post :create, group_member: invalid_input }.to change(GroupMember, :count).by(0)
       end
 
       context 'after the save' do
