@@ -90,7 +90,20 @@ feature 'groups management' do
           end
 
           it 'shows the new member form' do
-            expect(page).to have_field('Member Name')
+            expect(page).to have_field('User ID')
+          end
+
+          context 'when the create is successful' do
+            let(:existing_user) { create(:user) }
+
+            before do
+              fill_in('User ID', with: "#{user.id}")
+              click_button('Add Member')
+            end
+
+            it 'shows a success message' do
+              expect(page).to have_content('Member successfully added!')
+            end
           end
         end
 
