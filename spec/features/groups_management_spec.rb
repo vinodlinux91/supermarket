@@ -110,6 +110,12 @@ feature 'groups management' do
                 expect(page).to have_content(existing_user.username)
               end
             end
+
+            context 'removing a member' do
+              it 'shows a remove button' do
+                expect(page).to have_link('Remove')
+              end
+            end
           end
         end
 
