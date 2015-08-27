@@ -70,12 +70,12 @@ feature 'groups management' do
           expect(page).to have_content('My Next Group')
         end
 
-        it 'shows a list of members' do
-          expect(page).to have_content('Members')
+        it 'shows a list of admin members' do
+          expect(page).to have_content('Admin Members')
         end
 
-        it 'shows the user as a member' do
-          within('ul#members') do
+        it 'shows the user as an admin' do
+          within('ul#admin_members') do
             expect(page).to have_content(user.username)
           end
         end

@@ -6,7 +6,7 @@ class GroupsController < ApplicationController
   def create
     @group = Group.new(group_params)
     if @group.save
-      GroupMember.create!(user: current_user, group: @group)
+      GroupMember.create!(user: current_user, group: @group, admin: true)
       flash[:notice] = 'Group successfully created!'
       redirect_to group_path(@group)
     else
@@ -17,7 +17,8 @@ class GroupsController < ApplicationController
 
   def show
     @group = Group.find(params[:id])
-    @members = @group.members
+    @admin_members = @group.group_members.where(admin: true).to_a.map!{|mem| mem.user}
+    @members = @group.group_members.where(admin: false).to_a.map!{|mem| mem.user}
   end
 
   private

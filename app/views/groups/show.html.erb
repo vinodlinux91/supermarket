@@ -4,10 +4,10 @@
     <%= @group.name %>
   </h1>
 
-  <h2>Members</h2>
-  <% if @members.any? %>
-    <ul class="listing" id="members">
-      <%= render partial: 'member', collection: @members %>
+  <h2>Admin Members</h2>
+    <ul class="listing" id="admin_members">
+      <%= render partial: 'member', collection: @admin_members %>
     </ul>
-  <% end %>
+    <ul class="listing" id="members">
+    </ul>
 </div>

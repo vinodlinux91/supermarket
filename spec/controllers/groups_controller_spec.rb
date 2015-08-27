@@ -57,7 +57,10 @@ describe GroupsController do
             expect(Group.last.members).to include(user)
           end
 
-          it 'sets the creating user as an admin member'
+          it 'sets the creating user as an admin member' do
+            post :create, group: group_input
+            expect(GroupMember.last.admin).to eq(true)
+          end
         end
       end
 
@@ -98,8 +101,18 @@ describe GroupsController do
     let(:group) { create(:group) }
     let(:user) { create(:user) }
 
+    let!(:member) do
+      GroupMember.create!(user: user, group: group, admin: false)
+    end
+
+    let(:admin_user) { create(:user) }
+
+    let!(:admin_member) do
+      GroupMember.create!(user: admin_user, group: group, admin: true)
+    end
+
     before do
-      group.members << user
+      expect(group.members).to include(user)
     end
 
     it 'finds the correct group' do
@@ -107,8 +120,24 @@ describe GroupsController do
       expect(assigns(:group)).to eq(group)
     end
 
-    context 'listing group members' do
+    context 'listing admins' do
+      before do
+        expect(group.members).to include(admin_user)
+        expect(admin_member.admin).to eq(true)
+      end
 
+      it 'includes users who are admins' do
+        get :show, id: group
+        expect(assigns(:admin_members)).to include(admin_user)
+      end
+
+      it 'does not include users who are not admins' do
+        get :show, id: group
+        expect(assigns(:admin_members)).to_not include(user)
+      end
+    end
+
+    context 'listing group members' do
       it 'includes users who are members' do
         get :show, id: group
         expect(assigns(:members)).to include(user)
@@ -121,7 +150,13 @@ describe GroupsController do
         expect(assigns(:members)).to_not include(user2)
       end
 
+      it 'does not include admin members' do
+        get :show, id: group
+        expect(assigns(:members)).to_not include(admin_user)
+      end
     end
+
+
     it 'renders the group show template' do
       get :show, id: group
       expect(response).to render_template('show')
