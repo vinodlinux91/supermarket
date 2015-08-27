@@ -80,6 +80,20 @@ feature 'groups management' do
           end
         end
 
+        it 'shows an add member button' do
+          expect(page).to have_link('Add Member')
+        end
+
+        context 'adding a member' do
+          before do
+            click_link('Add Member')
+          end
+
+          it 'shows the new member form' do
+            expect(page).to have_field('Member Name')
+          end
+        end
+
         context 'showing the group on the user\'s groups profile page' do
           before do
             expect(page).to have_link('View Profile')

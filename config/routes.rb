@@ -109,6 +109,7 @@ Supermarket::Application.routes.draw do
   end
 
   resources :groups
+  resources :group_members
 
   resources :tools, constraints: proc { ROLLOUT.active?(:tools) } do
     member do
