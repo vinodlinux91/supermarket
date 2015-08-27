@@ -97,12 +97,18 @@ feature 'groups management' do
             let(:existing_user) { create(:user) }
 
             before do
-              fill_in('User ID', with: "#{user.id}")
+              fill_in('User ID', with: "#{existing_user.id}")
               click_button('Add Member')
             end
 
             it 'shows a success message' do
               expect(page).to have_content('Member successfully added!')
+            end
+
+            it 'shows a list of members' do
+              within('ul#members') do
+                expect(page).to have_content(existing_user.username)
+              end
             end
           end
         end

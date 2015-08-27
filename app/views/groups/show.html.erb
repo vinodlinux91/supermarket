@@ -8,7 +8,9 @@
     <ul class="listing" id="admin_members">
       <%= render partial: 'member', collection: @admin_members %>
     </ul>
+  <h2>Members</h2>
     <ul class="listing" id="members">
+      <%= render partial: 'member', collection: @members %>
     </ul>
 
     <%= link_to "Add Member", new_group_member_path(group: @group), class: 'button medium radius' %>

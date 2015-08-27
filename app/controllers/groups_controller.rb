@@ -18,7 +18,7 @@ class GroupsController < ApplicationController
   def show
     @group = Group.find(params[:id])
     @admin_members = @group.group_members.where(admin: true).to_a.map!(&:user)
-    @members = @group.group_members.where(admin: false).to_a.map!(&:user)
+    @members = @group.group_members.where(admin: nil).to_a.map!(&:user)
   end
 
   private
