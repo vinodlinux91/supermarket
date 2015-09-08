@@ -111,9 +111,27 @@ feature 'groups management' do
               end
             end
 
-            context 'removing a member' do
-              it 'shows a remove button' do
+            it 'shows a remove button' do
+              within('ul#members') do
                 expect(page).to have_link('Remove')
+              end
+            end
+
+            context 'removing a member' do
+              before do
+                within('ul#members') do
+                  click_link('Remove')
+                end
+              end
+
+              it 'shows a success message' do
+                expect(page).to have_content('Member successfully removed')
+              end
+
+              it 'does not contain the removed member' do
+                within('ul#members') do
+                  expect(page).to_not have_content(existing_user.username)
+                end
               end
             end
           end

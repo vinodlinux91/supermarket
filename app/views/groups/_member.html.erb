@@ -3,7 +3,7 @@
     <div class="header-content">
       <%= link_to member, rel: 'member', itemprop: 'username' do %><%= member.username %><% end %>
       <div class="remove">
-        <%= link_to "Remove", new_group_member_path, class: 'button tiny alert radius' %>
+        <%= link_to "Remove", group_member_path(member.id), method: :delete, class: 'button tiny alert radius' %>
       </div>
     </div>
   </div>

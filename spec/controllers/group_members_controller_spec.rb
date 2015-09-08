@@ -94,4 +94,32 @@ describe GroupMembersController do
       end
     end
   end
+
+  describe 'DELETE #destroy' do
+    let(:group) { create(:group) }
+    let(:user) { create(:user) }
+
+    let!(:group_member) do
+      GroupMember.create(user: user, group: group)
+    end
+
+    it 'finds the correct group member' do
+      delete :destroy, id: group_member.id
+      expect(assigns(:group_member)).to eq(group_member)
+    end
+
+    it 'removes the member from the GroupMember' do
+      expect { delete :destroy, id: group_member.id }.to change(GroupMember, :count).by(-1)
+    end
+
+    it 'shows a success message' do
+      delete :destroy, id: group_member.id
+      expect(flash[:notice]).to include('Member successfully removed')
+    end
+
+    it 'redirects to the group index page' do
+      delete :destroy, id: group_member.id
+      expect(response).to redirect_to(group_path(group.id))
+    end
+  end
 end
