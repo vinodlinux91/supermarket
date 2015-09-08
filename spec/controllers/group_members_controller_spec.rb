@@ -108,18 +108,37 @@ describe GroupMembersController do
       expect(assigns(:group_member)).to eq(group_member)
     end
 
-    it 'removes the member from the GroupMember' do
-      expect { delete :destroy, id: group_member.id }.to change(GroupMember, :count).by(-1)
+    context 'when the destroy is successful' do
+      it 'removes the member from the GroupMember' do
+        expect { delete :destroy, id: group_member.id }.to change(GroupMember, :count).by(-1)
+      end
+
+      it 'shows a success message' do
+        delete :destroy, id: group_member.id
+        expect(flash[:notice]).to include('Member successfully removed')
+      end
+
+      it 'redirects to the group index page' do
+        delete :destroy, id: group_member.id
+        expect(response).to redirect_to(group_path(group.id))
+      end
     end
 
-    it 'shows a success message' do
-      delete :destroy, id: group_member.id
-      expect(flash[:notice]).to include('Member successfully removed')
-    end
+    context 'when the destroy is not successful' do
+      before do
+        allow(GroupMember).to receive(:find).and_return(group_member)
+        allow(group_member).to receive(:destroy).and_return(false)
+      end
 
-    it 'redirects to the group index page' do
-      delete :destroy, id: group_member.id
-      expect(response).to redirect_to(group_path(group.id))
+      it 'shows a warning message' do
+        delete :destroy, id: group_member.id
+        expect(flash[:warning]).to include('An error has occurred')
+      end
+
+      it 'redirects to the group index page' do
+        delete :destroy, id: group_member.id
+        expect(response).to redirect_to(group_path(group.id))
+      end
     end
   end
 end

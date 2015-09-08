@@ -21,8 +21,8 @@ class GroupMembersController < ApplicationController
       flash[:notice] = 'Member successfully removed'
       redirect_to group_path(@group_member.group)
     else
-      #flash[:warning] = 'An error has occurred'
-      #redirect_to new_group_member_path
+      flash[:warning] = 'An error has occurred'
+      redirect_to group_path(@group_member.group)
     end
   end
 
