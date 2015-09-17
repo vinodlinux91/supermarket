@@ -3,7 +3,9 @@
     <div class="header-content">
       <%= link_to member, rel: 'member', itemprop: 'username' do %><%= member.user.username %><% end %>
       <div class="remove">
+        <% if GroupMember.where(group: member.group, user: current_user).first.admin == true %>
         <%= link_to "Remove", group_member_path(member.id), method: :delete, data: { confirm: "Are you sure you want to remove this member?" }, class: 'button tiny alert radius' %>
+      <% end %>
       </div>
     </div>
   </div>
