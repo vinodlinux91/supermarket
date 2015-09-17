@@ -98,7 +98,7 @@ describe GroupsController do
     let(:user) { create(:user) }
 
     let!(:member) do
-      GroupMember.create!(user: user, group: group, admin: false)
+      GroupMember.create!(user: user, group: group, admin: nil)
     end
 
     let(:admin_user) { create(:user) }
