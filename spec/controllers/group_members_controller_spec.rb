@@ -109,6 +109,16 @@ describe GroupMembersController do
     end
 
     context 'when the destroy is successful' do
+      let(:other_user) { create(:user) }
+
+      let!(:other_group_member) do
+        GroupMember.create(user: other_user, group: group)
+      end
+
+      before do
+        expect(group.group_members).to include(other_group_member)
+      end
+
       it 'removes the member from the GroupMember' do
         expect { delete :destroy, id: group_member.id }.to change(GroupMember, :count).by(-1)
       end
@@ -121,6 +131,11 @@ describe GroupMembersController do
       it 'redirects to the group index page' do
         delete :destroy, id: group_member.id
         expect(response).to redirect_to(group_path(group.id))
+      end
+
+      it 'does not remove other members' do
+        delete :destroy, id: group_member.id
+        expect(group.group_members).to include(other_group_member)
       end
     end
 

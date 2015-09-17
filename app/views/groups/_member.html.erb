@@ -1,7 +1,7 @@
 <li itemscope itemtype="http://schema.org/Code">
   <div class="header">
     <div class="header-content">
-      <%= link_to member, rel: 'member', itemprop: 'username' do %><%= member.username %><% end %>
+      <%= link_to member, rel: 'member', itemprop: 'username' do %><%= member.user.username %><% end %>
       <div class="remove">
         <%= link_to "Remove", group_member_path(member.id), method: :delete, class: 'button tiny alert radius' %>
       </div>

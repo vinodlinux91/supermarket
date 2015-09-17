@@ -124,7 +124,7 @@ describe GroupsController do
 
       it 'includes users who are admins' do
         get :show, id: group
-        expect(assigns(:admin_members)).to include(admin_user)
+        expect(assigns(:admin_members)).to include(admin_member)
       end
 
       it 'does not include users who are not admins' do
@@ -136,19 +136,12 @@ describe GroupsController do
     context 'listing group members' do
       it 'includes users who are members' do
         get :show, id: group
-        expect(assigns(:members)).to include(user)
-      end
-
-      it 'does not include users who are not members' do
-        user2 = create(:user)
-
-        get :show, id: group
-        expect(assigns(:members)).to_not include(user2)
+        expect(assigns(:members)).to include(member)
       end
 
       it 'does not include admin members' do
         get :show, id: group
-        expect(assigns(:members)).to_not include(admin_user)
+        expect(assigns(:members)).to_not include(admin_member)
       end
     end
 
