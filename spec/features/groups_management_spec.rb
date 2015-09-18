@@ -117,6 +117,26 @@ feature 'groups management' do
               end
             end
 
+            it 'shows a \'Make Admin\' button' do
+              within('ul#members') do
+                expect(page).to have_link('Make Admin')
+              end
+            end
+
+            context 'making a member an admin' do
+              before do
+                within('ul#members') do
+                  click_link('Make Admin')
+                end
+              end
+
+              it 'shows the member as an admin' do
+                within('ul#admin_members') do
+                  expect(page).to have_content(user.username)
+                end
+              end
+            end
+
             context 'removing a member' do
               before do
                 within('ul#members') do

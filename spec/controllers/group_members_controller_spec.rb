@@ -28,6 +28,82 @@ describe GroupMembersController do
     end
   end
 
+  describe 'POST #make_group_admin' do
+    let(:group_member) { create(:group_member) }
+    let(:group) { group_member.group }
+    let(:group_members) { group_member.group.group_members }
+    let(:group_members_query_result) { group_member.group.group_members.where(user_id: user.id, admin: true) }
+
+    let(:user) { create(:user) }
+
+    before do
+      allow(controller).to receive(:current_user).and_return(user)
+
+      allow(GroupMember).to receive(:find).and_return(group_member)
+      allow(group_member).to receive(:group).and_return(group)
+      allow(group).to receive(:group_members).and_return(group_members)
+    end
+
+    it 'checks whether the current user is an admin member of the group' do
+      allow(group_members).to receive(:where).with(user_id: user.id, admin: true).and_return(group_members_query_result)
+
+      expect(group_members_query_result).to receive(:present?)
+      post :make_admin, id: group_member
+    end
+
+    context 'when the current user is an admin member of the group' do
+      before do
+        allow(controller).to receive(:current_user_admin?).and_return(true)
+      end
+
+      it 'finds the correct group member' do
+        post :make_admin, id: group_member
+        expect(assigns(:group_member)).to eq(group_member)
+      end
+
+      it 'makes the group member an admin' do
+        expect(group_member.admin?).to eq(false)
+
+        post :make_admin, id: group_member
+
+        group_member.reload
+        expect(group_member.admin?).to eq(true)
+      end
+
+      it 'shows a success message' do
+        post :make_admin, id: group_member
+
+        expect(flash[:notice]).to include('Member has successfully been made an admin!')
+      end
+    end
+
+    context 'when the current user is not an admin member of the group' do
+      before do
+        allow(controller).to receive(:current_user_admin?).and_return(false)
+      end
+
+      it 'does not make the group member an admin' do
+        expect(group_member.admin?).to eq(false)
+
+        post :make_admin, id: group_member
+
+        group_member.reload
+        expect(group_member.admin?).to eq(false)
+      end
+
+      it 'shows an error message' do
+        post :make_admin, id: group_member
+
+        expect(flash[:error]).to include('You must be an admin member of the group to do that.')
+      end
+    end
+
+    it 'redirects to the group#show page' do
+      post :make_admin, id: group_member
+      expect(response).to redirect_to(group_path(group_member.group))
+    end
+  end
+
   describe 'POST #create' do
     let(:group) { create(:group) }
     let(:user) { create(:user) }
