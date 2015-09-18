@@ -5,7 +5,9 @@
       <div class="remove">
         <% if admin_member?(current_user, member.group) %>
           <%= link_to "Remove", group_member_path(member.id), method: :delete, data: { confirm: "Are you sure you want to remove this member?" }, class: 'button tiny alert radius' %>
-          <%= link_to "Make Admin", make_admin_group_member_path(member.id), method: :post, class: 'button tiny radius' %>
+          <% if !member.admin? %>
+            <%= link_to "Make Admin", make_admin_group_member_path(member.id), method: :post, class: 'button tiny radius' %>
+          <% end %>
       <% end %>
       </div>
     </div>
