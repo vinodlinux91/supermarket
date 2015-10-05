@@ -82,6 +82,7 @@ describe CollaboratorsController do
       context 'adding a collaborator group' do
         let(:group_member) { create(:group_member) }
         let(:group) { group_member.group }
+        let(:new_collaborator) { build(:cookbook_collaborator, resourceable_id: cookbook.id, user_id: group_member.user.id) }
 
         before do
           sign_in fanny
@@ -98,7 +99,10 @@ describe CollaboratorsController do
           post :create, collaborator: { group_ids: group.id, resourceable_type: 'Cookbook', resourceable_id: cookbook.id }
         end
 
-        it 'makes new collaborators for the group members'
+        it 'makes new collaborators for the group members' do
+          expect(Collaborator).to receive(:new).with( user_id: group_member.user.id, resourceable_type: 'Cookbook', resourceable_id: cookbook.id.to_s ).and_return(new_collaborator)
+          post :create, collaborator: { group_ids: group.id, resourceable_type: 'Cookbook', resourceable_id: cookbook.id }
+        end
 
         it 'authorizes each collaborator'
 
