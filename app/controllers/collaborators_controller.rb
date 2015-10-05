@@ -99,8 +99,15 @@ class CollaboratorsController < ApplicationController
     ])
   end
 
-  def collaborator_user_ids(collaborator_params, resource)
-    collaborator_params.delete(:user_ids).split(',') -
+  def collaborator_user_ids(resource)
+    included_user_ids - ineligible_collaborators(resource)
+  end
+
+  def included_user_ids
+    collaborator_params.delete(:user_ids).split(',')
+  end
+
+  def ineligible_collaborators(resource)
     Collaborator.ineligible_collaborators_for(resource).map(&:id).map(&:to_s)
   end
 
