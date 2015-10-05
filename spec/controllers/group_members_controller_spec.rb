@@ -119,7 +119,7 @@ describe GroupMembersController do
 
       context 'after the save' do
         let(:group_member) do
-          GroupMember.create(user: user, group: group)
+          create(:group_member, user: user, group: group)
         end
 
         before do
@@ -150,7 +150,7 @@ describe GroupMembersController do
 
       context 'after the save' do
         let(:group_member) do
-          GroupMember.new(user: user, group: group)
+          build(:group_member, user: user, group: group)
         end
 
         before do
@@ -176,7 +176,7 @@ describe GroupMembersController do
     let(:user) { create(:user) }
 
     let!(:group_member) do
-      GroupMember.create(user: user, group: group)
+      create(:group_member, user: user, group: group)
     end
 
     it 'finds the correct group member' do
@@ -188,7 +188,7 @@ describe GroupMembersController do
       let(:other_user) { create(:user) }
 
       let!(:other_group_member) do
-        GroupMember.create(user: other_user, group: group)
+        create(:group_member, user: other_user, group:group)
       end
 
       before do
