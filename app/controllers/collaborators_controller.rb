@@ -95,16 +95,21 @@ class CollaboratorsController < ApplicationController
     params.require(:collaborator).permit([
       :resourceable_type,
       :resourceable_id,
-      :user_ids
+      :user_ids,
+      :group_ids
     ])
   end
 
   def collaborator_user_ids(resource)
-    included_user_ids - ineligible_collaborators(resource)
+    group_member_user_ids + included_user_ids - ineligible_collaborators(resource)
+  end
+
+  def group_member_user_ids
+    collaborator_params[:group_ids].present? ? Group.find(collaborator_params[:group_ids]).members.map(&:id).map(&:to_s) : []
   end
 
   def included_user_ids
-    collaborator_params.delete(:user_ids).split(',')
+    collaborator_params[:user_ids].present? ? collaborator_params.delete(:user_ids).split(',') : []
   end
 
   def ineligible_collaborators(resource)

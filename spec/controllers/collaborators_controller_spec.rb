@@ -78,6 +78,38 @@ describe CollaboratorsController do
 
         expect(response.status).to eql(404)
       end
+
+      context 'adding a collaborator group' do
+        let(:group_member) { create(:group_member) }
+        let(:group) { group_member.group }
+
+        before do
+          sign_in fanny
+        end
+
+        it 'finds the correct group' do
+          expect(Group).to receive(:find).with(group.id.to_s).and_return(group)
+          post :create, collaborator: { group_ids: group.id, resourceable_type: 'Cookbook', resourceable_id: cookbook.id }
+        end
+
+        it 'finds the users for the group' do
+          allow(Group).to receive(:find).and_return(group)
+          expect(group).to receive(:members).and_return(group.group_members)
+          post :create, collaborator: { group_ids: group.id, resourceable_type: 'Cookbook', resourceable_id: cookbook.id }
+        end
+
+        it 'makes new collaborators for the group members'
+
+        it 'authorizes each collaborator'
+
+        it 'saves each collaborator'
+
+        it 'queues a collaborator mailer for each collaborator'
+      end
+
+      context 'adding multiple collaborator groups' do
+
+      end
     end
 
     describe 'DELETE #destroy' do
