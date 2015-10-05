@@ -98,4 +98,20 @@ class CollaboratorsController < ApplicationController
       :user_ids
     ])
   end
+
+  def collaborator_user_ids(collaborator_params, resource)
+    collaborator_params.delete(:user_ids).split(',') -
+    Collaborator.ineligible_collaborators_for(resource).map(&:id).map(&:to_s)
+  end
+
+  def add_collaborator(user)
+    collaborator = Collaborator.new(
+      collaborator_params.merge(user_id: user.id)
+    )
+
+    authorize! collaborator
+    collaborator.save!
+
+    CollaboratorMailer.delay.added_email(collaborator)
+  end
 end
