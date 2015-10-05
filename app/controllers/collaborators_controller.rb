@@ -113,7 +113,9 @@ class CollaboratorsController < ApplicationController
 
   def add_collaborator(user)
     collaborator = Collaborator.new(
-      collaborator_params.merge(user_id: user.id)
+      user_id: user.id,
+      resourceable_type: collaborator_params[:resourceable_type],
+      resourceable_id: collaborator_params[:resourceable_id]
     )
 
     authorize! collaborator
