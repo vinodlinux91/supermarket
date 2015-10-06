@@ -122,7 +122,17 @@ describe CollaboratorsController do
         end
 
         context 'when adding a collaborator group to a tool' do
-          it 'makes new collaborators for the group members'
+          let(:tool) { create(:tool, owner: fanny) }
+
+          before do
+            expect(cookbook.owner).to eq(fanny)
+            sign_in fanny
+          end
+
+          it 'makes new collaborators for the group members' do
+            expect(Collaborator).to receive(:new).with( user_id: group_member.user.id, resourceable: tool ).and_return(new_collaborator)
+            post :create, collaborator: { group_ids: group.id, resourceable_type: 'Tool', resourceable_id: tool.id }
+          end
         end
       end
 
