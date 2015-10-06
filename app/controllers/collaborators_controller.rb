@@ -119,13 +119,10 @@ class CollaboratorsController < ApplicationController
   def add_collaborator(user)
     collaborator = Collaborator.new(
       user_id: user.id,
-      resourceable_type: collaborator_params[:resourceable_type],
-      resourceable_id: collaborator_params[:resourceable_id]
+      resourceable: Cookbook.find(collaborator_params[:resourceable_id])
     )
-
     authorize! collaborator
     collaborator.save!
-
     CollaboratorMailer.delay.added_email(collaborator)
   end
 end

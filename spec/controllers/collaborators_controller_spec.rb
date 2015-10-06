@@ -82,9 +82,10 @@ describe CollaboratorsController do
       context 'adding a collaborator group' do
         let(:group_member) { create(:group_member) }
         let(:group) { group_member.group }
-        let(:new_collaborator) { build(:cookbook_collaborator, resourceable_id: cookbook.id, user_id: group_member.user.id) }
+        let(:new_collaborator) { build(:cookbook_collaborator, resourceable: cookbook) }
 
         before do
+          expect(cookbook.owner).to eq(fanny)
           sign_in fanny
         end
 
@@ -100,15 +101,29 @@ describe CollaboratorsController do
         end
 
         it 'makes new collaborators for the group members' do
-          expect(Collaborator).to receive(:new).with( user_id: group_member.user.id, resourceable_type: 'Cookbook', resourceable_id: cookbook.id.to_s ).and_return(new_collaborator)
+          expect(Collaborator).to receive(:new).with( user_id: group_member.user.id, resourceable: cookbook ).and_return(new_collaborator)
           post :create, collaborator: { group_ids: group.id, resourceable_type: 'Cookbook', resourceable_id: cookbook.id }
         end
 
-        it 'authorizes each collaborator'
+        it 'saves each collaborator' do
+          allow(Collaborator).to receive(:new).and_return(new_collaborator)
+          expect(new_collaborator).to receive(:save!)
+          post :create, collaborator: { group_ids: group.id, resourceable_type: 'Cookbook', resourceable_id: cookbook.id }
+        end
 
-        it 'saves each collaborator'
+        it 'queues a collaborator mailer for each collaborator' do
+          allow(Collaborator).to receive(:new).and_return(new_collaborator)
 
-        it 'queues a collaborator mailer for each collaborator'
+          collaborator_mailer = double('CollaboratorMailer', delay: 'true')
+          expect(CollaboratorMailer).to receive(:delay).and_return(collaborator_mailer)
+
+          expect(collaborator_mailer).to receive(:added_email).with(new_collaborator)
+          post :create, collaborator: { group_ids: group.id, resourceable_type: 'Cookbook', resourceable_id: cookbook.id }
+        end
+
+        context 'when adding a collaborator group to a tool' do
+          it 'makes new collaborators for the group members'
+        end
       end
 
       context 'adding multiple collaborator groups' do
