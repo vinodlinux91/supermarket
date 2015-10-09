@@ -134,10 +134,27 @@ describe CollaboratorsController do
             post :create, collaborator: { group_ids: group.id, resourceable_type: 'Tool', resourceable_id: tool.id }
           end
         end
-      end
 
-      context 'adding multiple collaborator groups' do
+        context 'adding multiple collaborator groups' do
+          let(:group_member2) { create(:group_member) }
+          let(:group2) { group_member.group }
+          let(:new_collaborator2) { build(:cookbook_collaborator, resourceable: cookbook) }
 
+          before do
+            expect(cookbook.owner).to eq(fanny)
+            sign_in fanny
+          end
+
+          it 'finds all groups' do
+            expect(Group).to receive(:find).twice.and_return(group, group2)
+            post :create, collaborator: { group_ids: group.id, resourceable_type: 'Cookbook', resourceable_id: cookbook.id }
+          end
+
+          it 'makes new collaborators for all group members' do
+            expect(Collaborator).to receive(:new)#.with( { user_id: group_member.user.id, resourceable: cookbook }, { user_id: group_member2.user_id, resourceable: cookbook }).and_return(new_collaborator)
+            post :create, collaborator: { group_ids: [ group.id, group2.id], resourceable_type: 'Cookbook', resourceable_id: cookbook.id }
+          end
+        end
       end
     end
 
