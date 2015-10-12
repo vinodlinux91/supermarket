@@ -106,7 +106,9 @@ class CollaboratorsController < ApplicationController
 
   def group_member_user_ids
     if collaborator_params[:group_ids].present?
-      Group.find(collaborator_params[:group_ids]).members.map(&:id).map(&:to_s)
+      collaborator_params[:group_ids].split(',').each do |group|
+        Group.find(group).members.map(&:id).map(&:to_s)
+      end
     else
       []
     end
