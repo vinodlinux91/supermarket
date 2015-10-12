@@ -1,6 +1,27 @@
 require 'spec_helper'
 
 describe GroupsController do
+  describe 'GET #index' do
+    let(:group1) { create(:group) }
+    let(:group2) { create(:group) }
+
+    before do
+      expect(Group.all).to include(group1, group2)
+    end
+
+    it 'assigns groups' do
+      get :index
+
+      expect(assigns(:groups)).to include(group1, group2)
+    end
+
+    it 'renders the index template' do
+      get :index
+
+      expect(response).to render_template('index')
+    end
+  end
+
   describe 'GET #new' do
     it 'makes a new record' do
       get :new
@@ -8,7 +29,7 @@ describe GroupsController do
       expect(assigns(:group)).to be_new_record
     end
 
-    it 'renders the  new template' do
+    it 'renders the new template' do
       get :new
 
       expect(response).to render_template('new')
