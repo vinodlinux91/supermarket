@@ -151,7 +151,10 @@ describe CollaboratorsController do
           end
 
           it 'makes new collaborators for all group members' do
-            expect(Collaborator).to receive(:new)#.with( { user_id: group_member.user.id, resourceable: cookbook }, { user_id: group_member2.user_id, resourceable: cookbook }).and_return(new_collaborator)
+            allow(Collaborator).to receive(:new).and_return(new_collaborator2)
+
+            expect(Collaborator).to receive(:new).once.with( { user_id: group_member.user.id, resourceable: cookbook }).and_return(new_collaborator2)
+            expect(Collaborator).to receive(:new).once.with( { user_id: group_member2.user.id, resourceable: cookbook }).and_return(new_collaborator2)
             post :create, collaborator: { group_ids: "#{group.id},#{group2.id}", resourceable_type: 'Cookbook', resourceable_id: cookbook.id }
           end
         end

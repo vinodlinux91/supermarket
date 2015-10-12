@@ -105,13 +105,15 @@ class CollaboratorsController < ApplicationController
   end
 
   def group_member_user_ids
+    group_member_ids = []
     if collaborator_params[:group_ids].present?
       collaborator_params[:group_ids].split(',').each do |group|
-        Group.find(group).members.map(&:id).map(&:to_s)
+        group_member_ids << Group.find(group).members.map(&:id).map(&:to_s)
       end
     else
       []
     end
+    group_member_ids
   end
 
   def included_user_ids
@@ -123,6 +125,7 @@ class CollaboratorsController < ApplicationController
   end
 
   def add_collaborator(user)
+
     collaborator = Collaborator.new(
       user_id: user.id,
       resourceable: collaborator_resourceable
