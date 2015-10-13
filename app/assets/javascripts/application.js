@@ -27,6 +27,7 @@
 //= require flash
 //= require select2.min
 //= require collaborators
+//= require groups
 //= require cookbookDeprecate
 //= require cookbookInstallTabs
 //= require organizations
