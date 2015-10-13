@@ -18,7 +18,14 @@ describe GroupsController do
     it 'renders the index template' do
       get :index
 
+      expect(response).to be_success
       expect(response).to render_template('index')
+    end
+
+    it 'renders the json format when requested' do
+      get :index, format: :json
+
+      expect(response).to be_success
     end
   end
 
