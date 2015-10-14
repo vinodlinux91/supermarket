@@ -8,7 +8,7 @@ class GroupsController < ApplicationController
 
     respond_to do |format|
       format.html
-      format.json { render json: @groups.to_json }
+      format.json
     end
   end
 
