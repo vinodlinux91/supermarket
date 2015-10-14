@@ -2,6 +2,10 @@ class GroupsController < ApplicationController
   def index
     @groups = Group.all
 
+    if params[:q]
+      @groups = @groups.search(params[:q])
+    end
+
     respond_to do |format|
       format.html
       format.json { render json: @groups.to_json }

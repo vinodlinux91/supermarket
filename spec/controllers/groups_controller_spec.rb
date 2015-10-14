@@ -27,6 +27,22 @@ describe GroupsController do
 
       expect(response).to be_success
     end
+
+    context 'when passing a query string' do
+      let(:a_group) { create(:group, name: 'a-group') }
+      let(:b_group) { create(:group, name: 'b-group') }
+      let(:c_group) { create(:group, name: 'c-group') }
+
+      before do
+        expect(Group.all).to include(a_group, b_group, c_group)
+      end
+
+      it 'returns groups only matching the query string' do
+        get :index, q: 'a', format: :json
+        group = assigns(:groups)
+        expect(group.count(:all)).to eq(1)
+      end
+    end
   end
 
   describe 'GET #new' do
