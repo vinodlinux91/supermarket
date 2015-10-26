@@ -116,10 +116,10 @@ describe FakesController do
   end
 
   context 'adding collaborator groups' do
-    let(:group_member) { create(:group_member) }
+    let!(:group_member) { create(:group_member) }
     let(:group) { group_member.group }
-    let(:new_collaborator) { build(:cookbook_collaborator, resourceable: cookbook) }
-    let(:group_member2) { create(:group_member, group: group) }
+
+    let!(:group_member2) { create(:group_member, group: group) }
 
     context 'adding a single group' do
       before do
@@ -131,18 +131,18 @@ describe FakesController do
       end
 
       it 'finds the correct group' do
-        expect(Group).to receive(:find).with(group.id).and_return(group)
-        subject.add_group_members_as_collaborators(cookbook, group.id)
+        expect(Group).to receive(:find).with(group.id.to_s).and_return(group)
+        subject.add_group_members_as_collaborators(cookbook, "#{group.id}")
       end
 
       it 'finds the members for the group' do
         expect(group).to receive(:members).and_return(group.members)
-        subject.add_group_members_as_collaborators(cookbook, group.id)
+        subject.add_group_members_as_collaborators(cookbook, "#{group.id}")
       end
 
       it 'maps the user ids' do
         expect(group.members).to receive(:map).and_return(group.members.map(&:id))
-        subject.add_group_members_as_collaborators(cookbook, group.id)
+        subject.add_group_members_as_collaborators(cookbook, "#{group.id}")
       end
 
       it 'transforms the user ids into a string' do
@@ -150,28 +150,33 @@ describe FakesController do
         allow(group.members).to receive(:map).and_return(member_ids)
         expect(member_ids).to receive(:map).and_return(member_ids.map(&:to_s))
 
-        subject.add_group_members_as_collaborators(cookbook, group.id)
+        subject.add_group_members_as_collaborators(cookbook, "#{group.id}")
       end
 
       it 'makes a collaborator for each group user' do
         user_ids = group.members.map(&:id).map(&:to_s)
 
         expect(subject).to receive(:add_users_as_collaborators).with(cookbook, user_ids)
-        subject.add_group_members_as_collaborators(cookbook, group.id.to_s)
+        subject.add_group_members_as_collaborators(cookbook, "#{group.id}")
       end
-
-      context 'adding a group to a tool' do
-p
-      end
-
-      context 'adding multiple collaborator groups' do
-
-      end
-
     end
 
     context 'adding multiple groups' do
+      let!(:group2_member) { create(:group_member) }
+      let(:group2) { group2_member.group }
+      let!(:group2_member2) { create(:group_member, group: group2) }
 
+      it 'finds all groups' do
+        expect(Group).to receive(:find).twice.and_return(group, group2)
+        subject.add_group_members_as_collaborators(cookbook, "#{group.id}, #{group2.id}")
+      end
+
+      it 'makes a new collaborator for each user in both groups' do
+        user_ids = group.members.map(&:id).map(&:to_s) + group2.members.map(&:id).map(&:to_s)
+
+        expect(subject).to receive(:add_users_as_collaborators).with(cookbook, user_ids)
+        subject.add_group_members_as_collaborators(cookbook, "#{group.id}, #{group2.id}")
+      end
     end
   end
 

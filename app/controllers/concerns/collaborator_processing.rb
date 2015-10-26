@@ -23,8 +23,8 @@ module CollaboratorProcessing
     end
   end
 
-  def add_group_members_as_collaborators(resource, group_id)
-    add_users_as_collaborators(resource, group_user_ids(Group.find(group_id)))
+  def add_group_members_as_collaborators(resource, group_ids)
+    add_users_as_collaborators(resource, group_user_ids(group_ids))
   end
 
   def remove_collaborator(collaborator)
@@ -42,7 +42,13 @@ module CollaboratorProcessing
     end
   end
 
-  def group_user_ids(group)
-    group.members.map(&:id).map(&:to_s)
+  def group_user_ids(group_ids)
+    group_user_ids = []
+
+    group_ids.split(',').each do |group|
+      group_user_ids << Group.find(group).members.map(&:id).map(&:to_s)
+    end
+
+    group_user_ids.flatten
   end
 end
