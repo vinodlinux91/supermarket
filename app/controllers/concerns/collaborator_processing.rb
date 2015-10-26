@@ -23,6 +23,10 @@ module CollaboratorProcessing
     end
   end
 
+  def add_group_members_as_collaborators(resource, group_id)
+    add_users_as_collaborators(resource, group_user_ids(Group.find(group_id)))
+  end
+
   def remove_collaborator(collaborator)
     authorize!(collaborator, 'destroy?')
     collaborator.destroy
@@ -36,5 +40,9 @@ module CollaboratorProcessing
     else
       []
     end
+  end
+
+  def group_user_ids(group)
+    group.members.map(&:id).map(&:to_s)
   end
 end

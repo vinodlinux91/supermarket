@@ -115,6 +115,66 @@ describe FakesController do
     end
   end
 
+  context 'adding collaborator groups' do
+    let(:group_member) { create(:group_member) }
+    let(:group) { group_member.group }
+    let(:new_collaborator) { build(:cookbook_collaborator, resourceable: cookbook) }
+    let(:group_member2) { create(:group_member, group: group) }
+
+    context 'adding a single group' do
+      before do
+        expect(cookbook.owner).to eq(fanny)
+        sign_in fanny
+
+        allow(Group).to receive(:find).and_return(group)
+        allow(group).to receive(:members).and_return(group.members)
+      end
+
+      it 'finds the correct group' do
+        expect(Group).to receive(:find).with(group.id).and_return(group)
+        subject.add_group_members_as_collaborators(cookbook, group.id)
+      end
+
+      it 'finds the members for the group' do
+        expect(group).to receive(:members).and_return(group.members)
+        subject.add_group_members_as_collaborators(cookbook, group.id)
+      end
+
+      it 'maps the user ids' do
+        expect(group.members).to receive(:map).and_return(group.members.map(&:id))
+        subject.add_group_members_as_collaborators(cookbook, group.id)
+      end
+
+      it 'transforms the user ids into a string' do
+        member_ids = group.members.map(&:id)
+        allow(group.members).to receive(:map).and_return(member_ids)
+        expect(member_ids).to receive(:map).and_return(member_ids.map(&:to_s))
+
+        subject.add_group_members_as_collaborators(cookbook, group.id)
+      end
+
+      it 'makes a collaborator for each group user' do
+        user_ids = group.members.map(&:id).map(&:to_s)
+
+        expect(subject).to receive(:add_users_as_collaborators).with(cookbook, user_ids)
+        subject.add_group_members_as_collaborators(cookbook, group.id.to_s)
+      end
+
+      context 'adding a group to a tool' do
+p
+      end
+
+      context 'adding multiple collaborator groups' do
+
+      end
+
+    end
+
+    context 'adding multiple groups' do
+
+    end
+  end
+
   context 'removing users' do
     let!(:hank) { create(:user, first_name: 'Hank') }
     let!(:hanky) { create(:user, first_name: 'Hanky') }
