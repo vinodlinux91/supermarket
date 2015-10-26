@@ -43,6 +43,13 @@ describe CollaboratorsController do
         expect(response).to redirect_to(cookbook)
       end
 
+      it 'adds the user as a collaborator' do
+        sign_in fanny
+
+        expect(controller).to receive(:add_users_as_collaborators).with(cookbook, hank.id.to_s)
+        post :create, collaborator: { user_ids: hank.id, resourceable_type: 'Cookbook', resourceable_id: cookbook.id }
+      end
+
       it 'does not include the resource owner if the resource owner tries to add themselves as a contributor' do
         sign_in fanny
 

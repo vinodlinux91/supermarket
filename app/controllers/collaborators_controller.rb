@@ -35,7 +35,6 @@ class CollaboratorsController < ApplicationController
       resource = collaborator_params[:resourceable_type].constantize.find(
         collaborator_params[:resourceable_id]
       )
-
       add_users_as_collaborators(resource, collaborator_params[:user_ids])
 
       redirect_to resource, notice: t('collaborator.added')
