@@ -43,26 +43,6 @@ describe CollaboratorsController do
         expect(response).to redirect_to(cookbook)
       end
 
-      it 'sends the collaborator an email' do
-        sign_in fanny
-
-        Sidekiq::Testing.inline! do
-          expect do
-            post :create, collaborator: { user_ids: hank.id, resourceable_type: 'Cookbook', resourceable_id: cookbook.id }
-          end.to change { ActionMailer::Base.deliveries.size }.by(1)
-        end
-      end
-
-      it 'fails if the signed in user is not the resource owner' do
-        sign_in hanky
-
-        expect do
-          post :create, collaborator: { user_ids: hank.id, resourceable_type: 'Cookbook', resourceable_id: cookbook.id }
-        end.to_not change { Collaborator.count }
-
-        expect(response.status).to eql(404)
-      end
-
       it 'does not include the resource owner if the resource owner tries to add themselves as a contributor' do
         sign_in fanny
 
