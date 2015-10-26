@@ -99,47 +99,4 @@ class CollaboratorsController < ApplicationController
       :group_ids
     ])
   end
-
-  def collaborator_user_ids(resource)
-    group_member_user_ids + included_user_ids - ineligible_collaborators(resource)
-  end
-
-  def group_member_user_ids
-    group_member_ids = []
-    if collaborator_params[:group_ids].present?
-      collaborator_params[:group_ids].split(',').each do |group|
-        group_member_ids << Group.find(group).members.map(&:id).map(&:to_s)
-      end
-    else
-      []
-    end
-    group_member_ids
-  end
-
-  def included_user_ids
-    collaborator_params[:user_ids].present? ? collaborator_params.delete(:user_ids).split(',') : []
-  end
-
-  def ineligible_collaborators(resource)
-    Collaborator.ineligible_collaborators_for(resource).map(&:id).map(&:to_s)
-  end
-
-  def add_collaborator(user)
-
-    collaborator = Collaborator.new(
-      user_id: user.id,
-      resourceable: collaborator_resourceable
-    )
-    authorize! collaborator
-    collaborator.save!
-    CollaboratorMailer.delay.added_email(collaborator)
-  end
-
-  def collaborator_resourceable
-    if collaborator_params[:resourceable_type] == 'Cookbook'
-      Cookbook.find(collaborator_params[:resourceable_id])
-    elsif collaborator_params[:resourceable_type] == 'Tool'
-      Tool.find(collaborator_params[:resourceable_id])
-    end
-  end
 end
