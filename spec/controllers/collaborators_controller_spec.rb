@@ -65,6 +65,18 @@ describe CollaboratorsController do
 
         expect(response.status).to eql(404)
       end
+
+      context 'when adding a group of collaborators' do
+        let(:group1) { create(:group) }
+        let(:group2) { create(:group) }
+
+        it 'adds collaborators for all groups' do
+          sign_in fanny
+          expect(controller).to receive(:add_group_members_as_collaborators).with(cookbook, "#{group1.id}, #{group2.id}")
+
+          post :create, collaborator: { group_ids: "#{group1.id}, #{group2.id}", resourceable_type: 'Cookbook', resourceable_id: cookbook.id }
+        end
+      end
     end
 
     describe 'DELETE #destroy' do
