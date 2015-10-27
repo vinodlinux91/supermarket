@@ -136,8 +136,31 @@ describe GroupMembersController do
           post :create, group_member: input
           expect(response).to redirect_to(group_path(group))
         end
+
+        context 'when the group is associated with a cookbook' do
+          let(:cookbook) { create(:cookbook) }
+          let(:group_resource) { create(:group_resource, resourceable: cookbook, group: group) }
+
+          before do
+            expect(group.group_resources).to include(group_resource)
+          end
+
+          it 'adds the new member as a collaborator to the cookbook' do
+            expect(controller).to receive(:add_users_as_collaborators).with(cookbook,user.id.to_s)
+            post :create, group_member: input
+          end
+        end
+
+        context 'when the group is associated with multiple cookbooks' do
+
+        end
+
+        context 'when the group is associated with a tool' do
+
+        end
       end
     end
+
 
     context 'with invalid input' do
       let(:invalid_input) do
