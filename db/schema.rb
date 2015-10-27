@@ -11,11 +11,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151012230549) do
+ActiveRecord::Schema.define(version: 20151027205208) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "pg_trgm"
 
   create_table "accounts", force: true do |t|
     t.integer  "user_id"
@@ -290,6 +289,14 @@ ActiveRecord::Schema.define(version: 20151012230549) do
     t.integer  "group_id"
     t.integer  "user_id"
     t.boolean  "admin"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "group_resources", force: true do |t|
+    t.integer  "group_id"
+    t.integer  "resourceable_id"
+    t.string   "resourceable_type"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

@@ -10,6 +10,7 @@ describe Cookbook do
     it { should have_many(:collaborators) }
     it { should have_many(:collaborator_users) }
     it { should have_one(:chef_account) }
+    it { should have_many(:group_resources) }
 
     context 'dependent deletions' do
       let!(:cookbook) { create(:cookbook) }

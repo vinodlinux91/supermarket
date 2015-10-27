@@ -4,6 +4,7 @@ describe Group do
   context 'associations' do
     it { should have_many(:group_members) }
     it { should have_many(:members) }
+    it { should have_many(:group_resources) }
   end
 
   it 'requires a name' do

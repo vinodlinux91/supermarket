@@ -83,6 +83,7 @@ class Cookbook < ActiveRecord::Base
   belongs_to :replacement, class_name: 'Cookbook', foreign_key: :replacement_id
   has_many :collaborators, as: :resourceable
   has_many :collaborator_users, through: :collaborators, source: :user
+  has_many :group_resources, as: :resourceable
 
   # Delegations
   # --------------------
