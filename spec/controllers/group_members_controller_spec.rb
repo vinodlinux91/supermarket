@@ -149,14 +149,21 @@ describe GroupMembersController do
             expect(controller).to receive(:add_users_as_collaborators).with(cookbook,user.id.to_s)
             post :create, group_member: input
           end
-        end
 
-        context 'when the group is associated with multiple cookbooks' do
+          context 'when the group is associated with multiple cookbooks' do
+            let(:cookbook2) { create(:cookbook) }
+            let(:group_resource2) { create(:group_resource, resourceable: cookbook2, group: group) }
 
-        end
+            before do
+              expect(group.group_resources).to include(group_resource, group_resource2)
+            end
 
-        context 'when the group is associated with a tool' do
-
+            it 'adds the new member as a collaborator to each cookbook' do
+              expect(controller).to receive(:add_users_as_collaborators).with(cookbook,user.id.to_s)
+              expect(controller).to receive(:add_users_as_collaborators).with(cookbook2,user.id.to_s)
+              post :create, group_member: input
+            end
+          end
         end
       end
     end

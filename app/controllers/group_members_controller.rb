@@ -1,4 +1,6 @@
 class GroupMembersController < ApplicationController
+  include CollaboratorProcessing
+
   def new
     @group = Group.find(params[:group])
     @group_member = GroupMember.new(group: Group.find(params[:group]))
@@ -6,8 +8,8 @@ class GroupMembersController < ApplicationController
 
   def create
     @group_member = GroupMember.new(group_member_params)
-    if @group_member.save
 
+    if @group_member.save
       group_resources.each do |resource|
         add_users_as_collaborators(resource, @group_member.user.id.to_s)
       end

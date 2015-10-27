@@ -63,6 +63,11 @@ describe 'cookbook collaboration' do
 
       before do
         expect(page).to_not have_link("#{existing_user.first_name} #{existing_user.last_name}", href: user_path(existing_user))
+        find('#manage').click
+        find('[rel*=add-collaborator]').click
+        obj = find('.groups').set(group.id)
+
+        click_button('Add')
       end
 
       it 'adds the member as a contributor to the cookbook' do
