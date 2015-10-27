@@ -135,6 +135,17 @@ describe FakesController do
         subject.add_group_members_as_collaborators(cookbook, "#{group.id}")
       end
 
+      it 'associates the group with the resource' do
+        expect(group).to receive(:group_resources).at_least(:once).and_return([])
+
+        new_group_resource = create(:group_resource, group: group)
+        allow(GroupResource).to receive(:create!).and_return(new_group_resource)
+
+        expect(group.group_resources).to receive(:<<).with(new_group_resource)
+
+        subject.add_group_members_as_collaborators(cookbook, "#{group.id}")
+      end
+
       it 'finds the members for the group' do
         expect(group).to receive(:members).and_return(group.members)
         subject.add_group_members_as_collaborators(cookbook, "#{group.id}")
@@ -167,7 +178,7 @@ describe FakesController do
       let!(:group2_member2) { create(:group_member, group: group2) }
 
       it 'finds all groups' do
-        expect(Group).to receive(:find).twice.and_return(group, group2)
+        expect(Group).to receive(:find).at_least(:twice).and_return(group, group2)
         subject.add_group_members_as_collaborators(cookbook, "#{group.id}, #{group2.id}")
       end
 

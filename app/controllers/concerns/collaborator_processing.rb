@@ -25,6 +25,7 @@ module CollaboratorProcessing
 
   def add_group_members_as_collaborators(resource, group_ids)
     add_users_as_collaborators(resource, group_user_ids(group_ids))
+    associate_group_to_resource(group_ids, resource)
   end
 
   def remove_collaborator(collaborator)
@@ -50,5 +51,12 @@ module CollaboratorProcessing
     end
 
     group_user_ids.flatten
+  end
+
+  def associate_group_to_resource(group_ids, resource)
+    group_ids.split(',').each do |group_id|
+      group = Group.find(group_id)
+      group.group_resources << GroupResource.create!(group: group, resourceable: resource)
+    end
   end
 end
