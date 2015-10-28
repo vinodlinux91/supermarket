@@ -243,6 +243,28 @@ describe GroupMembersController do
         delete :destroy, id: group_member.id
         expect(group.group_members).to include(other_group_member)
       end
+
+      context 'when the group is associated with a cookbook' do
+        let(:cookbook) { create(:cookbook) }
+
+        let(:group_resource) { create(:group_resource, resourceable: cookbook, group: group) }
+
+        let(:group_member) do
+          create(:group_member, user: user, group: group)
+        end
+
+        let(:collaborator) { create(:cookbook_collaborator, resourceable: cookbook, user: user) }
+
+        before do
+          expect(group.group_resources).to include(group_resource)
+          expect(cookbook.collaborators).to include(collaborator)
+        end
+
+        it 'removes the member as a collaborator on that cookbook' do
+          expect(controller).to receive(:remove_collaborator).with(collaborator)
+          delete :destroy, id: group_member.id
+        end
+      end
     end
 
     context 'when the destroy is not successful' do

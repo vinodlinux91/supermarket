@@ -25,6 +25,14 @@ class GroupMembersController < ApplicationController
   def destroy
     @group_member = GroupMember.find(params[:id])
     if @group_member.destroy
+
+      group_resources.each do |resource|
+        # TO DO - handle cases where user may have been added as a collaborator
+        # before being added to the group, or added as a collaborator through multiple groups
+        collaborator = resource.collaborators.where(user_id: @group_member.user_id).first
+        remove_collaborator(collaborator)
+      end
+
       flash[:notice] = 'Member successfully removed'
       redirect_to group_path(@group_member.group)
     else
