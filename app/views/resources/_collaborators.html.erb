@@ -1,5 +1,5 @@
 <div class="collaborators_avatar">
-  <% collaborators.each do |collaborator| %>
+  <% non_group_collaborators(collaborators).each do |collaborator| %>
     <div class="gravatar-container">
       <% collaboration_permissions_for(collaborator) do |transfer, destroy| %>
         <% if destroy %>
@@ -12,5 +12,15 @@
         <% end %>
       <% end %>
     </div>
+  <% end %>
+
+  <% if resource.group_resources.present? %>
+    <h2>Collaborator Groups</h2>
+    <% resource.group_resources.each do |group_resource| %>
+      <h3><%= group_resource.group.name %></h3>
+      <% group_collaborators(collaborators, group_resource.group).each do |collaborator | %>
+          <%= link_to gravatar_for(collaborator.user, size: 80), collaborator.user, title: collaborator.user.username %>
+      <% end %>
+    <% end %>
   <% end %>
 </div>
