@@ -5,13 +5,14 @@ module CollaboratorProcessing
     helper_method :add_users_as_collaborators
   end
 
-  def add_users_as_collaborators(resource, user_ids)
+  def add_users_as_collaborators(resource, user_ids, group_id=nil)
     user_ids = user_ids.split(',') - ineligible_ids(resource)
 
     User.where(id: user_ids).each do |user|
       collaborator = Collaborator.new(
         user_id: user.id,
-        resourceable: resource
+        resourceable: resource,
+        group_id: group_id
       )
 
       # Passes object and action to Supermarket::Authorization,
@@ -24,8 +25,10 @@ module CollaboratorProcessing
   end
 
   def add_group_members_as_collaborators(resource, group_ids)
-    add_users_as_collaborators(resource, group_user_ids(group_ids))
-    associate_group_to_resource(group_ids, resource)
+    group_ids.split(',').each do |group_id|
+      add_users_as_collaborators(resource, group_user_ids(group_id), group_id)
+      associate_group_to_resource(group_id, resource)
+    end
   end
 
   def remove_collaborator(collaborator)
@@ -43,20 +46,12 @@ module CollaboratorProcessing
     end
   end
 
-  def group_user_ids(group_ids)
-    group_user_ids = []
-
-    group_ids.split(',').each do |group|
-      group_user_ids << Group.find(group).members.map(&:id).map(&:to_s)
-    end
-
-    group_user_ids.flatten
+  def group_user_ids(group)
+    Group.find(group).members.map(&:id).map(&:to_s)
   end
 
-  def associate_group_to_resource(group_ids, resource)
-    group_ids.split(',').each do |group_id|
+  def associate_group_to_resource(group_id, resource)
       group = Group.find(group_id)
       group.group_resources << GroupResource.create!(group: group, resourceable: resource)
-    end
   end
 end

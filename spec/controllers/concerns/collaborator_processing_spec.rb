@@ -65,7 +65,7 @@ describe FakesController do
       let(:new_collaborator) { build(:cookbook_collaborator, user: user, resourceable: cookbook) }
 
       it 'creates a new collaborator' do
-        expect(Collaborator).to receive(:new).with(user_id: user.id, resourceable: cookbook).and_return(new_collaborator)
+        expect(Collaborator).to receive(:new).with(user_id: user.id, resourceable: cookbook, group_id:nil).and_return(new_collaborator)
         subject.add_users_as_collaborators(cookbook, user_ids)
       end
 
@@ -167,8 +167,16 @@ describe FakesController do
       it 'makes a collaborator for each group user' do
         user_ids = group.members.map(&:id).map(&:to_s)
 
-        expect(subject).to receive(:add_users_as_collaborators).with(cookbook, user_ids)
+        expect(subject).to receive(:add_users_as_collaborators).with(cookbook, user_ids, group.id.to_s)
         subject.add_group_members_as_collaborators(cookbook, "#{group.id}")
+      end
+
+      it 'associates the collaborator with the group' do
+        expect(cookbook.collaborators).to be_empty
+        subject.add_group_members_as_collaborators(cookbook, "#{group.id}")
+        cookbook.collaborators.each do |collaborator|
+          expect(collaborator.group).to eq(group)
+        end
       end
     end
 
@@ -183,10 +191,12 @@ describe FakesController do
       end
 
       it 'makes a new collaborator for each user in both groups' do
-        user_ids = group.members.map(&:id).map(&:to_s) + group2.members.map(&:id).map(&:to_s)
+        expect(cookbook.collaborators).to be_empty
 
-        expect(subject).to receive(:add_users_as_collaborators).with(cookbook, user_ids)
-        subject.add_group_members_as_collaborators(cookbook, "#{group.id}, #{group2.id}")
+        subject.add_group_members_as_collaborators(cookbook, "#{group.id},#{group2.id}")
+
+        collaborator_user_ids = cookbook.collaborators.map(&:user_id)
+        expect(collaborator_user_ids).to include(group_member.user.id, group2_member.user.id, group2_member2.user.id)
       end
     end
   end
