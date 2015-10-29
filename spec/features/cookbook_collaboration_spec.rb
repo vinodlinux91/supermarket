@@ -91,5 +91,20 @@ describe 'cookbook collaboration' do
       end
     end
 
+    context 'removing groups of collaborators' do
+      before do
+        click_link('Remove Group')
+      end
+
+      it 'removes the group name from the cookbook page' do
+        expect(page).to_not have_content(group.name)
+      end
+
+      it 'removes the group members as collaborators' do
+        group.group_members.each do |member|
+          expect(page).to_not have_link("#{member.user.first_name} #{member.user.last_name}", href: user_path(member.user))
+        end
+      end
+    end
   end
 end

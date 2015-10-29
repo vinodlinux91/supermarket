@@ -201,7 +201,7 @@ describe FakesController do
     end
   end
 
-  context 'removing users' do
+  context 'removing collaborators' do
     let!(:hank) { create(:user, first_name: 'Hank') }
     let!(:hanky) { create(:user, first_name: 'Hanky') }
 
@@ -244,6 +244,35 @@ describe FakesController do
       expect do
         subject.remove_collaborator(collaborator)
       end.to raise_error(Pundit::NotAuthorizedError)
+    end
+  end
+
+  context 'removing groups of collaborators' do
+    let!(:group_member1) { create(:group_member) }
+    let!(:group) { group_member1.group }
+    let!(:group_member2) { create(:group_member, group: group) }
+
+    let(:collaborator1) { create(:cookbook_collaborator, group: group, user: group_member1.user, resourceable: cookbook) }
+    let(:collaborator2) { create(:cookbook_collaborator, group: group, user: group_member2.user, resourceable: cookbook) }
+
+    let(:group_resource) { create(:group_resource, resourceable: cookbook, group: group) }
+
+    before do
+      expect(group.group_members).to include(group_member1, group_member2)
+      expect(cookbook.group_resources).to include(group_resource)
+      expect(cookbook.collaborators).to include(collaborator1, collaborator2)
+    end
+
+    it 'finds all collaborators associatedc with the group' do
+      allow(Group).to receive(:find).and_return(group)
+      expect(Collaborator).to receive(:where).with(resourceable: cookbook, group: group).and_return(cookbook.collaborators)
+      subject.remove_group_collaborators(cookbook, group)
+    end
+
+    it 'removes all collaborators associated with the group' do
+      expect(subject).to receive(:remove_collaborator).with(collaborator1)
+      expect(subject).to receive(:remove_collaborator).with(collaborator2)
+      subject.remove_group_collaborators(cookbook, group)
     end
   end
 end

@@ -36,6 +36,12 @@ module CollaboratorProcessing
     collaborator.destroy
   end
 
+  def remove_group_collaborators(resource, group)
+    group_collaborators(resource,group).each do |collaborator|
+      remove_collaborator(collaborator)
+    end
+  end
+
   private
 
   def ineligible_ids(resource)
@@ -51,7 +57,11 @@ module CollaboratorProcessing
   end
 
   def associate_group_to_resource(group_id, resource)
-      group = Group.find(group_id)
-      group.group_resources << GroupResource.create!(group: group, resourceable: resource)
+    group = Group.find(group_id)
+    group.group_resources << GroupResource.create!(group: group, resourceable: resource)
+  end
+
+  def group_collaborators(resource,group)
+    Collaborator.where(resourceable: resource, group: group)
   end
 end
