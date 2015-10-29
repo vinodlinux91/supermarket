@@ -1,5 +1,5 @@
 <%= form_for @group_member do |f| %>
   <%= f.hidden_field :group_id, value: @group_member.group.id %>
-  <%= f.text_field :user_id, placeholder: 'User ID' %>
+  <%= f.collection_select(:user_id, User.all, :id, :username, { prompt: 'Please select a username' }) %>
   <%= f.submit 'Add Member', class: 'button primary radius' %>
 <% end %>
