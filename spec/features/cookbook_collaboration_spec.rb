@@ -52,7 +52,7 @@ describe 'cookbook collaboration' do
     end
 
     it 'shows the group name' do
-      expect(page).to have_content(group.name)
+      expect(page).to have_link(group.name)
     end
 
     it 'allows the owner to add a group of collaborators' do
@@ -97,13 +97,12 @@ describe 'cookbook collaboration' do
       end
 
       it 'removes the group name from the cookbook page' do
-        expect(page).to_not have_content(group.name)
+        expect(page).to_not have_link(group.name)
       end
 
       it 'removes the group members as collaborators' do
-        group.group_members.each do |member|
-          expect(page).to_not have_link("#{member.user.first_name} #{member.user.last_name}", href: user_path(member.user))
-        end
+        # NOTE: The admin_group_member is also the owner of the cookbook, and therefore will remain on the page as the owner
+        expect(page).to_not have_link("#{non_admin_group_member.user.first_name} #{non_admin_group_member.user.last_name}", href: user_path(non_admin_group_member.user))
       end
     end
   end

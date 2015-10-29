@@ -49,7 +49,7 @@ class CollaboratorsController < ApplicationController
   #
   # DELETE /collaborators/:id
   #
-  # Remove a single collaborator.
+  # Remove a single collaborator or group of collaborators
   #
   def destroy
     respond_to do |format|
@@ -58,6 +58,27 @@ class CollaboratorsController < ApplicationController
         head :ok
       end
     end
+  end
+
+
+  # DELETE /collaborators/:id/transfer
+  # id is group's id
+  #
+  # Removes a group of collaborators
+  #
+  def destroy_group
+    group = Group.find(params[:id])
+    resource = params[:resourceable_type].constantize.find(
+      params[:resourceable_id]
+    )
+    remove_group_collaborators(resource, group)
+
+    GroupResource.where(group: group, resourceable: resource).each { |group_resource| group_resource.destroy }
+    redirect_to(
+      resource,
+      notice: t('collaborator.group_removed',
+                name: group.name)
+    )
   end
 
   #

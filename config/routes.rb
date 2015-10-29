@@ -64,6 +64,7 @@ Supermarket::Application.routes.draw do
   resources :collaborators, only: [:index, :new, :create, :destroy] do
     member do
       put :transfer
+      delete :destroy_group
     end
   end
 

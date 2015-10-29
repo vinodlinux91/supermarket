@@ -87,6 +87,62 @@ describe CollaboratorsController do
         expect(controller).to receive(:remove_collaborator).with(collaborator)
         delete :destroy, id: collaborator, format: :js
       end
+
+      context 'removing a group of collaborators' do
+        let!(:group_member1) { create(:group_member) }
+        let!(:group) { group_member1.group }
+        let!(:group_member2) { create(:group_member, group: group) }
+
+        let(:collaborator1) { create(:cookbook_collaborator, group: group, user: group_member1.user, resourceable: cookbook) }
+        let(:collaborator2) { create(:cookbook_collaborator, group: group, user: group_member2.user, resourceable: cookbook) }
+
+        let(:group_resource) { create(:group_resource, resourceable: cookbook, group: group) }
+        let(:group_resources) { GroupResource.where(group: group, resourceable: cookbook) }
+
+        before do
+          sign_in fanny
+        end
+
+        it 'finds the correct group' do
+          expect(Group).to receive(:find).and_return(group)
+          delete :destroy_group, id: group, resourceable_id: cookbook.id, resourceable_type: 'Cookbook'
+        end
+
+        it 'finds the correct resource' do
+          expect(Cookbook).to receive(:find).with(cookbook.id.to_s).and_return(cookbook)
+          delete :destroy_group, id: group, resourceable_id: cookbook.id, resourceable_type: 'Cookbook'
+        end
+
+        it 'finds the correct group resource' do
+          expect(GroupResource).to receive(:where).with(group: group, resourceable: cookbook).and_return(group_resources)
+          delete :destroy_group, id: group, resourceable_id: cookbook.id, resourceable_type: 'Cookbook'
+        end
+
+        it 'removes the group_resource entry' do
+          allow(GroupResource).to receive(:where).and_return(group_resources)
+
+          group_resources.each do |group_resource|
+            expect(group_resource).to receive(:destroy)
+          end
+
+          delete :destroy_group, id: group, resourceable_id: cookbook.id, resourceable_type: 'Cookbook'
+        end
+
+        it 'removes all collaborators associated with that group' do
+          expect(controller).to receive(:remove_group_collaborators).with(cookbook, group)
+          delete :destroy_group, id: group, resourceable_id: cookbook.id, resourceable_type: 'Cookbook'
+        end
+
+        it 'redirects back to the resource page' do
+          delete :destroy_group, id: group, resourceable_id: cookbook.id, resourceable_type: 'Cookbook'
+          expect(response).to redirect_to(cookbook_path(cookbook))
+        end
+
+        it 'shows a success message' do
+          delete :destroy_group, id: group, resourceable_id: cookbook.id, resourceable_type: 'Cookbook'
+          expect(flash[:notice]).to include("#{group.name} successfully removed")
+        end
+      end
     end
 
     describe 'PUT #transfer' do
