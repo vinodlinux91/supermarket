@@ -35,49 +35,61 @@ describe 'cookbook collaboration' do
   end
 
   context 'adding groups of collaborators' do
-    let!(:group_member) { create(:group_member, user: sally) }
-    let!(:group) { group_member.group }
-    let!(:group_member2) { create(:group_member, group: group) }
+    let!(:admin_group_member) { create(:group_member, admin: true, user: sally) }
+    let!(:group) { admin_group_member.group }
+    let!(:non_admin_group_member) { create(:group_member, group: group) }
 
     before do
       sign_in(sally)
       navigate_to_cookbook
 
-      expect(group.group_members).to include(group_member, group_member2)
-    end
-
-    it 'allows the owner to add a group of collaborators' do
+      expect(group.group_members).to include(admin_group_member, non_admin_group_member)
       find('#manage').click
       find('[rel*=add-collaborator]').click
       obj = find('.groups').set(group.id)
 
       click_button('Add')
+    end
 
+    it 'shows the group name' do
+      expect(page).to have_content(group.name)
+    end
 
-      expect(page).to have_link("#{group_member.user.first_name} #{group_member.user.last_name}", href: user_path(group_member.user))
-      expect(page).to have_link("#{group_member2.user.first_name} #{group_member2.user.last_name}", href: user_path(group_member2.user))
+    it 'allows the owner to add a group of collaborators' do
+      expect(page).to have_link("#{admin_group_member.user.first_name} #{admin_group_member.user.last_name}", href: user_path(admin_group_member.user))
+      expect(page).to have_link("#{non_admin_group_member.user.first_name} #{non_admin_group_member.user.last_name}", href: user_path(non_admin_group_member.user))
     end
 
     context 'when a member is added to the group' do
       let(:existing_user) { create(:user) }
 
       before do
-        expect(page).to_not have_link("#{existing_user.first_name} #{existing_user.last_name}", href: user_path(existing_user))
-        find('#manage').click
-        find('[rel*=add-collaborator]').click
-        obj = find('.groups').set(group.id)
-
-        click_button('Add')
-      end
-
-      it 'adds the member as a contributor to the cookbook' do
         visit group_path(group)
         click_link('Add Member')
         fill_in('User ID', with: "#{existing_user.id}")
         click_button('Add Member')
         navigate_to_cookbook
+      end
+
+      it 'adds the member as a contributor to the cookbook' do
         expect(page).to have_link("#{existing_user.first_name} #{existing_user.last_name}", href: user_path(existing_user))
       end
+
+      context 'when a member is removed from a group' do
+        before do
+          visit group_path(group)
+        end
+
+        it 'removes the member as a contributor on the cookbook' do
+          within('ul#members') do
+            click_link('Remove', match: :first)
+          end
+
+          navigate_to_cookbook
+          expect(page).to_not have_link("#{non_admin_group_member.user.first_name} #{non_admin_group_member.user.last_name}", href: user_path(non_admin_group_member.user))
+        end
+      end
     end
+
   end
 end
