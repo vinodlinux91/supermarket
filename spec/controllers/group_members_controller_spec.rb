@@ -146,7 +146,7 @@ describe GroupMembersController do
           end
 
           it 'adds the new member as a collaborator to the cookbook' do
-            expect(controller).to receive(:add_users_as_collaborators).with(cookbook,user.id.to_s)
+            expect(controller).to receive(:add_users_as_collaborators).with(cookbook,user.id.to_s, group.id)
             post :create, group_member: input
           end
 
@@ -159,8 +159,8 @@ describe GroupMembersController do
             end
 
             it 'adds the new member as a collaborator to each cookbook' do
-              expect(controller).to receive(:add_users_as_collaborators).with(cookbook,user.id.to_s)
-              expect(controller).to receive(:add_users_as_collaborators).with(cookbook2,user.id.to_s)
+              expect(controller).to receive(:add_users_as_collaborators).with(cookbook,user.id.to_s, group.id)
+              expect(controller).to receive(:add_users_as_collaborators).with(cookbook2,user.id.to_s, group.id)
               post :create, group_member: input
             end
           end

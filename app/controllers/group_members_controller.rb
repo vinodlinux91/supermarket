@@ -11,7 +11,7 @@ class GroupMembersController < ApplicationController
 
     if @group_member.save
       group_resources.each do |resource|
-        add_users_as_collaborators(resource, @group_member.user.id.to_s)
+        add_users_as_collaborators(resource, @group_member.user.id.to_s, @group_member.group.id)
       end
 
       flash[:notice] = 'Member successfully added!'
