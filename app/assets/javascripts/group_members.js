@@ -1,6 +1,6 @@
-$(document).on('open', '[data-reveal]', function () {
+$(document).on('opened', '#group-members[data-reveal]', function () {
   var settings =  {
-    placeholder: 'Search for a collaborator',
+    placeholder: 'Search for a user',
     minimumInputLength: 3,
     width: '100%',
     ajax: {
@@ -28,12 +28,6 @@ $(document).on('open', '[data-reveal]', function () {
     }
   }
 
-  $('.collaborators').select2(settings);
-  $('.collaborators.multiple').select2($.extend(settings, {multiple: true}));
-});
+  $('.users').select2(settings);
 
-$(function() {
-  $('a[rel~="remove_collaboration"]').on('ajax:success', function(e, data, status, xhr) {
-    $(this).closest('tr').remove();
-  });
 });

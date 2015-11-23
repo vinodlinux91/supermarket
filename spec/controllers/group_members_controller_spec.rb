@@ -1,33 +1,6 @@
 require 'spec_helper'
 
 describe GroupMembersController do
-  describe 'GET #new' do
-    let(:group) { create(:group) }
-
-    it 'finds the correct group' do
-      get :new, group: group
-
-      expect(assigns(:group)).to eq(group)
-    end
-
-    it 'makes a new record' do
-      get :new, group: group
-
-      expect(assigns(:group_member)).to be_new_record
-    end
-
-    it 'includes the group as an attribute of the new record' do
-      get :new, group: group
-      expect(assigns(:group_member).group).to eq(group)
-    end
-
-    it 'renders the new template' do
-      get :new, group: group
-
-      expect(response).to render_template('new')
-    end
-  end
-
   describe 'POST #make_group_admin' do
     let(:group_member) { create(:group_member) }
     let(:group) { group_member.group }

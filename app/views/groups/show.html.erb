@@ -13,5 +13,12 @@
       <%= render partial: 'member', collection: @members %>
     </ul>
 
-    <%= link_to "Add Member", new_group_member_path(group: @group), class: 'button medium radius' %>
+      <%= link_to '#', class: 'addgroupmember', rel: 'add-group-member', 'data-reveal-id' => 'group-members' do %>
+        <i class="fa fa-plus-square"></i>
+        Add Group Member
+      <% end %>
+
+    <div id="group-members" class="reveal-modal small" data-reveal>
+      <%= render 'group_members/add', group: @group %>
+    </div>
 </div>

@@ -81,23 +81,24 @@ feature 'groups management' do
         end
 
         it 'shows an add member button' do
-          expect(page).to have_link('Add Member')
+          expect(page).to have_link('Add Group Member')
         end
 
         context 'adding a member' do
+          let!(:existing_user) { create(:user) }
+
           before do
-            click_link('Add Member')
+            expect(User.all).to include(existing_user)
+            click_link('Add Group Member')
           end
 
           it 'shows the new member form' do
-            expect(page).to have_field('User ID')
+            expect(page).to have_content("Add Group Members")
           end
 
           context 'when the create is successful' do
-            let(:existing_user) { create(:user) }
-
             before do
-              fill_in('User ID', with: "#{existing_user.id}")
+              find(:xpath, "//input[@id='user_id']").set "#{existing_user.id}"
               click_button('Add Member')
             end
 

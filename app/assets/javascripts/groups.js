@@ -1,4 +1,4 @@
-$(document).on('opened', '[data-reveal]', function () {
+$(document).on('opened', '#collaborators[data-reveal]', function () {
   var settings =  {
     placeholder: 'Search for a group',
     minimumInputLength: 3,
@@ -24,8 +24,10 @@ $(document).on('opened', '[data-reveal]', function () {
     }
   }
 
-  $('.groups').select2(settings);
-  $('.groups.multiple').select2($.extend(settings, {multiple: true}));
+  if ( $('.groups').length) {
+    $('.groups').select2(settings);
+    $('.groups.multiple').select2($.extend(settings, {multiple: true}));
+  }
 });
 
 $(function() {

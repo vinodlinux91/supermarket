@@ -65,8 +65,8 @@ describe 'cookbook collaboration' do
 
       before do
         visit group_path(group)
-        click_link('Add Member')
-        fill_in('User ID', with: "#{existing_user.id}")
+        click_link('Add Group Member')
+        find(:xpath, "//input[@id='user_id']").set "#{existing_user.id}"
         click_button('Add Member')
         navigate_to_cookbook
       end

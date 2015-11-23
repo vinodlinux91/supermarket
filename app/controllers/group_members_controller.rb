@@ -1,11 +1,6 @@
 class GroupMembersController < ApplicationController
   include CollaboratorProcessing
 
-  def new
-    @group = Group.find(params[:group])
-    @group_member = GroupMember.new(group: Group.find(params[:group]))
-  end
-
   def create
     @group_member = GroupMember.new(group_member_params)
 
