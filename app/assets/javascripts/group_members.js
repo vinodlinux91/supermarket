@@ -29,5 +29,5 @@ $(document).on('opened', '#group-members[data-reveal]', function () {
   }
 
   $('.users').select2(settings);
-
+  $('.users.multiple').select2($.extend(settings, {multiple: true}));
 });
