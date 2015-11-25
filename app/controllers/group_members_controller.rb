@@ -2,18 +2,28 @@ class GroupMembersController < ApplicationController
   include CollaboratorProcessing
 
   def create
-    @group_member = GroupMember.new(group_member_params)
+    # group_member_params
+    # {"group_id"=>"32", "user_ids"=>"55,56"}
+    if group_member_params[:user_ids].present?
+      user_ids = group_member_params[:user_ids].split(',')
 
-    if @group_member.save
-      group_resources.each do |resource|
-        add_users_as_collaborators(resource, @group_member.user.id.to_s, @group_member.group.id)
+      user_ids.each do |user_id|
+        group_member = GroupMember.new(
+          user_id: user_id,
+          group_id: group_member_params[:group_id]
+        )
+
+        group_member.save
+        group_resources(group_member).each do |resource|
+          add_users_as_collaborators(resource, group_member.user.id.to_s, group_member.group.id)
+        end
       end
 
-      flash[:notice] = 'Member successfully added!'
+      flash[:notice] = 'Members successfully added!'
       redirect_to group_path(group_member_params[:group_id])
     else
       flash[:warning] = 'An error has occurred'
-      redirect_to new_group_member_path
+      not_found!
     end
   end
 
@@ -21,7 +31,7 @@ class GroupMembersController < ApplicationController
     @group_member = GroupMember.find(params[:id])
     if @group_member.destroy
 
-      group_resources.each do |resource|
+      group_resources(@group_member).each do |resource|
         # TO DO - handle cases where user may have been added as a collaborator
         # before being added to the group, or added as a collaborator through multiple groups
         collaborator = resource.collaborators.where(user_id: @group_member.user_id).first
@@ -53,14 +63,14 @@ class GroupMembersController < ApplicationController
   private
 
   def group_member_params
-    params.require(:group_member).permit(:user_id, :group_id)
+    params.require(:group_member).permit(:user_id, :group_id, :user_ids)
   end
 
   def current_user_admin?
     @group_member.group.group_members.where(user_id: current_user.id, admin: true).present?
   end
 
-  def group_resources
-    @group_member.group.group_resources.collect {|group_resource| group_resource.resourceable}
+  def group_resources(group_member)
+    group_member.group.group_resources.collect {|group_resource| group_resource.resourceable}
   end
 end

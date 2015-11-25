@@ -4,4 +4,8 @@ class GroupMember < ActiveRecord::Base
 
   validates_presence_of :group
   validates_presence_of :user
+
+  # Accessors
+  # --------------------
+  attr_accessor :user_ids
 end

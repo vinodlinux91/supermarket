@@ -83,7 +83,7 @@ describe GroupMembersController do
 
     context 'with valid input' do
       let(:input) do
-        { group_id: group.id, user_id: user.id }
+        { group_id: group.id, user_ids: user.id }
       end
 
       it 'saves the new group member to the database' do
@@ -102,7 +102,7 @@ describe GroupMembersController do
 
         it 'shows a success message' do
           post :create, group_member: input
-          expect(flash[:notice]).to include('Member successfully added!')
+          expect(flash[:notice]).to include('Members successfully added!')
         end
 
         it 'redirects to the group show template' do
@@ -141,10 +141,27 @@ describe GroupMembersController do
       end
     end
 
+    context 'adding multiple users' do
+      let(:user2) { create(:user) }
+
+      let(:input) do
+        { group_id: group.id, user_ids: "#{user.id},#{user2.id}" }
+      end
+
+      it 'saves both group members to the database' do
+        expect { post :create, group_member: input }.to change(GroupMember, :count).by(2)
+      end
+
+      context 'when the group is associated with a cookbook' do
+        it 'adds both members as collaborators to the cookbook'
+      end
+
+    end
+
 
     context 'with invalid input' do
       let(:invalid_input) do
-        { group_id: group.id, user_id: nil }
+        { group_id: group.id, user_ids: nil }
       end
 
       it 'does not save the group to the database' do
@@ -164,11 +181,6 @@ describe GroupMembersController do
         it 'shows an error' do
           post :create, group_member: invalid_input
           expect(flash[:warning]).to include('An error has occurred')
-        end
-
-        it 'redirects to the new member template' do
-          post :create, group_member: invalid_input
-          expect(response).to redirect_to(new_group_member_path)
         end
       end
     end

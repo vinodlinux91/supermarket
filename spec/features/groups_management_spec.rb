@@ -98,12 +98,12 @@ feature 'groups management' do
 
           context 'when the create is successful' do
             before do
-              find(:xpath, "//input[@id='user_id']").set "#{existing_user.id}"
+              find(:xpath, "//input[@id='user_ids']").set "#{existing_user.id}"
               click_button('Add Member')
             end
 
             it 'shows a success message' do
-              expect(page).to have_content('Member successfully added!')
+              expect(page).to have_content('Members successfully added!')
             end
 
             it 'shows a list of members' do
@@ -156,6 +156,24 @@ feature 'groups management' do
               end
             end
           end
+
+            context 'adding multiple members' do
+              let(:existing_user2) { create(:user) }
+              let(:existing_user3) { create(:user) }
+
+              before do
+                find(:xpath, "//input[@id='user_ids']").set "#{existing_user2.id}, #{existing_user3.id}"
+                click_button('Add Member')
+              end
+
+              it 'shows both members' do
+                within('ul#members') do
+                  expect(page).to have_content(existing_user2.username)
+                  expect(page).to have_content(existing_user3.username)
+                end
+              end
+            end
+
         end
 
         context 'showing the group on the user\'s groups profile page' do
