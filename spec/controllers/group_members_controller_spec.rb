@@ -153,9 +153,19 @@ describe GroupMembersController do
       end
 
       context 'when the group is associated with a cookbook' do
-        it 'adds both members as collaborators to the cookbook'
-      end
+        let(:cookbook) { create(:cookbook) }
+        let(:group_resource) { create(:group_resource, resourceable: cookbook, group: group) }
 
+        before do
+          expect(group.group_resources).to include(group_resource)
+        end
+
+        it 'adds both members as collaborators to the cookbook' do
+          expect(controller).to receive(:add_users_as_collaborators).with(cookbook,user.id.to_s, group.id)
+          expect(controller).to receive(:add_users_as_collaborators).with(cookbook,user2.id.to_s, group.id)
+          post :create, group_member: input
+        end
+      end
     end
 
 
