@@ -2,15 +2,31 @@ class GroupMembersController < ApplicationController
   include CollaboratorProcessing
 
   def create
-    if group_member_params[:user_ids].present?
-      add_group_members(group_member_params[:user_ids].split(','))
+    user_ids = group_member_params[:user_ids].split(',')
 
-      flash[:notice] = 'Members successfully added!'
+    if user_ids.present?
+      user_ids.each do |user_id|
+        group_member = GroupMember.new(
+          user_id: user_id,
+          group_id: group_member_params[:group_id]
+        )
+
+        if group_member.save
+          group_resources(group_member).each do |resource|
+            add_users_as_collaborators(resource, group_member.user.id.to_s, group_member.group.id)
+          end
+        else
+          flash[:warning] = group_member.errors.full_messages.join(', ')
+          redirect_to group_path(group_member_params[:group_id])
+          return
+        end
+      end
+
+      flash[:notice] = "Members successfully added!"
       redirect_to group_path(group_member_params[:group_id])
-    else
-      flash[:warning] = 'An error has occurred'
-      not_found!
     end
+
+    redirect_to group_path(group_member_params[:group_id])
   end
 
   def destroy
@@ -67,9 +83,13 @@ class GroupMembersController < ApplicationController
         group_id: group_member_params[:group_id]
       )
 
-      group_member.save
-      group_resources(group_member).each do |resource|
-        add_users_as_collaborators(resource, group_member.user.id.to_s, group_member.group.id)
+      if group_member.save
+        group_resources(group_member).each do |resource|
+          add_users_as_collaborators(resource, group_member.user.id.to_s, group_member.group.id)
+        end
+      else
+        flash[:warning] = 'An error has occurred'
+        not_found!
       end
     end
   end

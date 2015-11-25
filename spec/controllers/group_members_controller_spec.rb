@@ -193,6 +193,18 @@ describe GroupMembersController do
           expect(flash[:warning]).to include('An error has occurred')
         end
       end
+
+      context 'when a user is already a member of the group' do
+        let!(:group_member) { create(:group_member, user: user, group: group) }
+
+        before do
+          expect(group.members).to include(user)
+        end
+
+        it 'shows an error' do
+          GroupMember.create!(user: user, group: group)
+        end
+      end
     end
   end
 

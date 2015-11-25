@@ -19,5 +19,11 @@ describe GroupMember do
       group_member = GroupMember.new(group: group, user: nil)
       expect(group_member).to_not be_valid
     end
+
+    it 'will not a duplicate user to a group' do
+      GroupMember.create!(group: group, user: user)
+      dup_group_member = GroupMember.new(group: group, user: user)
+      expect(dup_group_member).to_not be_valid
+    end
   end
 end
