@@ -9,7 +9,7 @@ class Collaborator < ActiveRecord::Base # Associations
   # --------------------
   validates :resourceable, presence: true
   validates :user, presence: true
-  validates :resourceable_id, uniqueness: { scope: [:user_id, :resourceable_type] }
+  validates :resourceable_id, uniqueness: { scope: [:user_id, :resourceable_type, :group_id] }
 
   # Accessors
   # --------------------

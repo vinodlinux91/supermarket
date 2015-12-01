@@ -11,10 +11,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151027205208) do
+ActiveRecord::Schema.define(version: 20151201232841) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "pg_trgm"
 
   create_table "accounts", force: true do |t|
     t.integer  "user_id"
@@ -98,7 +99,7 @@ ActiveRecord::Schema.define(version: 20151027205208) do
     t.integer  "group_id"
   end
 
-  add_index "collaborators", ["user_id", "resourceable_type", "resourceable_id"], name: "index_cookbook_collaborators_on_user_id_and_resourceable", unique: true, using: :btree
+  add_index "collaborators", ["user_id", "resourceable_type", "resourceable_id", "group_id"], name: "index_collaborators_on_user_id_and_group_id_and_resourceable", unique: true, using: :btree
 
   create_table "contributor_request_responses", force: true do |t|
     t.integer  "contributor_request_id", null: false
