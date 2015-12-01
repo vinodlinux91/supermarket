@@ -190,19 +190,24 @@ describe GroupMembersController do
 
         it 'shows an error' do
           post :create, group_member: invalid_input
-          expect(flash[:warning]).to include('An error has occurred')
+          expect(flash[:warning]).to_not be_nil
         end
       end
 
       context 'when a user is already a member of the group' do
         let!(:group_member) { create(:group_member, user: user, group: group) }
 
+        let(:input) do
+          { group_id: group.id, user_ids: "#{user.id}" }
+        end
+
         before do
           expect(group.members).to include(user)
         end
 
         it 'shows an error' do
-          GroupMember.create!(user: user, group: group)
+          post :create, group_member: input
+          expect(flash[:warning]).to_not be_nil
         end
       end
     end

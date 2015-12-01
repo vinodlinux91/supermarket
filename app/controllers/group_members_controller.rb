@@ -2,7 +2,12 @@ class GroupMembersController < ApplicationController
   include CollaboratorProcessing
 
   def create
-    user_ids = group_member_params[:user_ids].split(',')
+    if group_member_params[:user_ids].present?
+      user_ids = group_member_params[:user_ids].split(',')
+    else
+      flash[:warning] = 'At least one user must be added!'
+      redirect_to group_path(group_member_params[:group_id])
+    end
 
     if user_ids.present?
       user_ids.each do |user_id|
@@ -10,7 +15,6 @@ class GroupMembersController < ApplicationController
           user_id: user_id,
           group_id: group_member_params[:group_id]
         )
-
         if group_member.save
           group_resources(group_member).each do |resource|
             add_users_as_collaborators(resource, group_member.user.id.to_s, group_member.group.id)
@@ -21,12 +25,10 @@ class GroupMembersController < ApplicationController
           return
         end
       end
-
       flash[:notice] = "Members successfully added!"
       redirect_to group_path(group_member_params[:group_id])
     end
 
-    redirect_to group_path(group_member_params[:group_id])
   end
 
   def destroy
@@ -74,23 +76,5 @@ class GroupMembersController < ApplicationController
 
   def group_resources(group_member)
     group_member.group.group_resources.collect {|group_resource| group_resource.resourceable}
-  end
-
-  def add_group_members(user_ids)
-    user_ids.each do |user_id|
-      group_member = GroupMember.new(
-        user_id: user_id,
-        group_id: group_member_params[:group_id]
-      )
-
-      if group_member.save
-        group_resources(group_member).each do |resource|
-          add_users_as_collaborators(resource, group_member.user.id.to_s, group_member.group.id)
-        end
-      else
-        flash[:warning] = 'An error has occurred'
-        not_found!
-      end
-    end
   end
 end
