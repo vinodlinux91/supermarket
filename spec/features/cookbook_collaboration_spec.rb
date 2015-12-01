@@ -105,5 +105,34 @@ describe 'cookbook collaboration' do
         expect(page).to_not have_link("#{non_admin_group_member.user.first_name} #{non_admin_group_member.user.last_name}", href: user_path(non_admin_group_member.user))
       end
     end
+
+    context 'when a user is already a collaborator with another group' do
+      context 'adding the group' do
+        let!(:admin_group_member_2) { create(:group_member, admin: true, user: sally) }
+        let!(:group_2) { admin_group_member_2.group }
+        let!(:non_admin_group_member_2) { create(:group_member, group: group_2, user: non_admin_group_member.user) }
+
+        before do
+          expect(non_admin_group_member_2.user).to eq(non_admin_group_member.user)
+          navigate_to_cookbook
+        end
+
+        it 'adds the second group' do
+          find('#manage').click
+          find('[rel*=add-collaborator]').click
+          obj = find('.groups').set(group_2.id)
+
+          click_button('Add')
+          expect(page).to have_link(group_2.name)
+        end
+
+        it 'adds the user as a second collaborator associated with group_2' do
+        end
+      end
+
+      context 'removing the group' do
+
+      end
+    end
   end
 end
