@@ -131,11 +131,16 @@ describe 'cookbook collaboration' do
           expect(non_admin_group_member_2.user).to eq(non_admin_group_member.user)
           expect(page).to have_link("#{non_admin_group_member_2.user.first_name} #{non_admin_group_member_2.user.last_name}", href: user_path(non_admin_group_member_2.user), count: 2)
         end
-      end
 
-      context 'removing the group' do
-
+        context 'removing the group' do
+          it 'removes the second collaborator'
+          it 'shows a warning that the user is still a collaborator associated with another group'
+        end
       end
+    end
+
+    context 'when a user is already a collaborator NOT affiliated with a group' do
+      # When group_id is nil
     end
   end
 end
