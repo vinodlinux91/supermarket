@@ -144,7 +144,7 @@ describe 'cookbook collaboration' do
           end
 
           it 'shows a warning that the user is still a collaborator associated with another group' do
-            expect(page).to have_content("#{non_admin_group_member_2.user.username} is still a collaborator on this cookbook associated with the #{group.name} group")
+            expect(page).to have_content("#{non_admin_group_member_2.user.username} was removed as a collaborator associated with #{group_2.name}, but is still a collaborator associated with #{group.name}")
           end
         end
       end
