@@ -74,16 +74,14 @@ class CollaboratorsController < ApplicationController
 
     collaborator_users = group_collaborators(resource, group).map(&:user)
 
-
     remove_group_collaborators(group_collaborators(resource, group))
-
 
     GroupResource.where(group: group, resourceable: resource).each { |group_resource| group_resource.destroy }
 
+    flash[:notice] = t('collaborator.group_removed', name: group.name) + "\n"
 
-    flash[:notice] = t('collaborator.group_removed', name: group.name)
-
-
+    dup_user_collaborators(collaborator_users, resource).each do |collaborator|
+      flash[:notice] << "#{collaborator.user.username} was removed as a collaborator associated with #{group.name}, but is still a collaborator associated with #{collaborator.group.name}\n"
     end
 
     redirect_to(
@@ -126,10 +124,10 @@ class CollaboratorsController < ApplicationController
   #
   def collaborator_params
     params.require(:collaborator).permit([
-      :resourceable_type,
-      :resourceable_id,
-      :user_ids,
-      :group_ids
+                                         :resourceable_type,
+                                         :resourceable_id,
+                                         :user_ids,
+                                         :group_ids
     ])
   end
 
@@ -137,13 +135,15 @@ class CollaboratorsController < ApplicationController
     Collaborator.where(resourceable: resource, group: group)
   end
 
-  def dup_collaborators(group_collaborator_users, resource)
-    dup_collaborator_users = []
+  def dup_user_collaborators(collaborator_users, resource)
+    dup_user_collaborators = []
 
-    group_collaborator_users.each do |user|
-      dup_collaborator_users << user if resource.collaborator_users.include?(user)
+    collaborator_users.each do |user|
+      resource.collaborators.where(user: user).each do |dup_user|
+        dup_user_collaborators << dup_user
+      end
     end
 
-    dup_collaborator_users
+    dup_user_collaborators
   end
 end
