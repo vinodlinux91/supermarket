@@ -60,8 +60,4 @@ module CollaboratorProcessing
     group = Group.find(group_id)
     group.group_resources << GroupResource.create!(group: group, resourceable: resource)
   end
-
-  def group_collaborators(resource,group)
-    Collaborator.where(resourceable: resource, group: group)
-  end
 end
