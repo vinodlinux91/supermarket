@@ -263,16 +263,11 @@ describe FakesController do
       expect(cookbook.collaborators).to include(collaborator1, collaborator2)
     end
 
-    it 'finds all collaborators associatedc with the group' do
-      allow(Group).to receive(:find).and_return(group)
-      expect(Collaborator).to receive(:where).with(resourceable: cookbook, group: group).and_return(cookbook.collaborators)
-      subject.remove_group_collaborators(cookbook, group)
-    end
-
     it 'removes all collaborators associated with the group' do
+      group_collaborators = Collaborator.where(resourceable: cookbook, group: group)
       expect(subject).to receive(:remove_collaborator).with(collaborator1)
       expect(subject).to receive(:remove_collaborator).with(collaborator2)
-      subject.remove_group_collaborators(cookbook, group)
+      subject.remove_group_collaborators(group_collaborators)
     end
   end
 end

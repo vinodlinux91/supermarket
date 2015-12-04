@@ -133,14 +133,32 @@ describe 'cookbook collaboration' do
         end
 
         context 'removing the group' do
-          it 'removes the second collaborator'
-          it 'shows a warning that the user is still a collaborator associated with another group'
+          before do
+            resource = GroupResource.where(resourceable_id: cookbook.id, group: group_2).first
+            # Finds the correct "Remove Group" link associated with group_2
+            find("a[href=\"#{destroy_group_collaborator_path(resourceable_type: resource.resourceable_type, resourceable_id: resource.resourceable_id, id: resource.group)}\"]").click
+          end
+
+          it 'removes the second collaborator' do
+            expect(page).to have_link("#{non_admin_group_member_2.user.first_name} #{non_admin_group_member_2.user.last_name}", href: user_path(non_admin_group_member_2.user), count: 1)
+          end
+
+          it 'shows a warning that the user is still a collaborator associated with another group' do
+            expect(page).to have_content("#{non_admin_group_member_2.user.username} is still a collaborator on this cookbook associated with the #{group.name} group")
+          end
         end
       end
     end
 
     context 'when a user is already a collaborator NOT affiliated with a group' do
       # When group_id is nil
+      context 'adding a group' do
+
+      end
+
+      context 'removing a group' do
+
+      end
     end
   end
 end

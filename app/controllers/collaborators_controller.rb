@@ -71,7 +71,7 @@ class CollaboratorsController < ApplicationController
     resource = params[:resourceable_type].constantize.find(
       params[:resourceable_id]
     )
-    remove_group_collaborators(resource, group)
+    remove_group_collaborators(Collaborator.where(resourceable: resource, group: group))
 
     GroupResource.where(group: group, resourceable: resource).each { |group_resource| group_resource.destroy }
     redirect_to(

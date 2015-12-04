@@ -36,8 +36,8 @@ module CollaboratorProcessing
     collaborator.destroy
   end
 
-  def remove_group_collaborators(resource, group)
-    group_collaborators(resource,group).each do |collaborator|
+  def remove_group_collaborators(collaborators)
+    collaborators.each do |collaborator|
       remove_collaborator(collaborator)
     end
   end

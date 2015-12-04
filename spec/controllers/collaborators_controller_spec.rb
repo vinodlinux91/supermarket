@@ -93,8 +93,8 @@ describe CollaboratorsController do
         let!(:group) { group_member1.group }
         let!(:group_member2) { create(:group_member, group: group) }
 
-        let(:collaborator1) { create(:cookbook_collaborator, group: group, user: group_member1.user, resourceable: cookbook) }
-        let(:collaborator2) { create(:cookbook_collaborator, group: group, user: group_member2.user, resourceable: cookbook) }
+        let!(:collaborator1) { create(:cookbook_collaborator, group: group, user: group_member1.user, resourceable: cookbook) }
+        let!(:collaborator2) { create(:cookbook_collaborator, group: group, user: group_member2.user, resourceable: cookbook) }
 
         let(:group_resource) { create(:group_resource, resourceable: cookbook, group: group) }
         let(:group_resources) { GroupResource.where(group: group, resourceable: cookbook) }
@@ -129,7 +129,9 @@ describe CollaboratorsController do
         end
 
         it 'removes all collaborators associated with that group' do
-          expect(controller).to receive(:remove_group_collaborators).with(cookbook, group)
+          collaborators = Collaborator.where(group: group, resourceable: cookbook)
+          allow(Collaborator).to receive(:where).and_return(collaborators)
+          expect(controller).to receive(:remove_group_collaborators).with(Collaborator.where(group: group, resourceable: cookbook))
           delete :destroy_group, id: group, resourceable_id: cookbook.id, resourceable_type: 'Cookbook'
         end
 
@@ -141,6 +143,31 @@ describe CollaboratorsController do
         it 'shows a success message' do
           delete :destroy_group, id: group, resourceable_id: cookbook.id, resourceable_type: 'Cookbook'
           expect(flash[:notice]).to include("#{group.name} successfully removed")
+        end
+
+        context 'removing a collaborator who is also a member of a second group associated with the resource' do
+          let!(:group_2) { create(:group) }
+          let!(:group_2_member) { create(:group_member, group: group_2, user: group_member1.user) }
+          let!(:group_resource) { create(:group_resource, resourceable: cookbook, group: group_2) }
+          let!(:group_2_collaborator) { create(:cookbook_collaborator, resourceable: cookbook, user: group_member1.user, group_id: group_2.id) }
+
+          before do
+            expect(group_2.group_members).to include(group_2_member)
+            expect(group_2_member.user).to eq(group_member1.user)
+          end
+
+          it 'does not remove the collaborator record for the second group' do
+            expect(cookbook.collaborator_users).to include(group_2_member.user)
+            delete :destroy_group, id: group, resourceable_id: cookbook.id, resourceable_type: 'Cookbook'
+            expect(cookbook.collaborator_users).to include(group_2_member.user)
+          end
+
+          it 'shows a message to the user' do
+            delete :destroy_group, id: group, resourceable_id: cookbook.id, resourceable_type: 'Cookbook'
+            expect(flash[:notice]).to include(
+              "#{group_member1.user.username} was removed as a collaborator associated with #{group_2.name}, but is still a collaborator associated with #{group.name}"
+            )
+          end
         end
       end
     end
