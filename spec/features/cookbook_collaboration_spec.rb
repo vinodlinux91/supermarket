@@ -144,20 +144,61 @@ describe 'cookbook collaboration' do
           end
 
           it 'shows a warning that the user is still a collaborator associated with another group' do
-            expect(page).to have_content("#{non_admin_group_member_2.user.username} was removed as a collaborator associated with #{group_2.name}, but is still a collaborator associated with #{group.name}")
+            expect(page).to have_content("#{non_admin_group_member_2.user.username} is still a collaborator associated with #{group.name}")
           end
         end
       end
-    end
 
-    context 'when a user is already a collaborator NOT affiliated with a group' do
-      # When group_id is nil
-      context 'adding a group' do
+      context 'when a user is already a collaborator NOT affiliated with a group' do
+        let(:new_user) { create(:user) }
+        let!(:dup_collaborator_group_member) { create(:group_member, group: group, user: new_user) }
 
-      end
+        before do
+          navigate_to_cookbook
 
-      context 'removing a group' do
+          find('#manage').click
+          find('[rel*=add-collaborator]').click
+          obj = find('.collaborators.multiple').set(new_user.id)
 
+          click_button('Add')
+        end
+
+        context 'adding a group' do
+          let!(:new_admin_member) { create(:group_member, admin: true, user: sally) }
+          let!(:new_group) { new_admin_member.group }
+          let!(:new_member) { create(:group_member, group: new_group, user: new_user) }
+
+          before do
+            expect(Collaborator.where(resourceable: cookbook, user: new_user, group: nil)).to_not be_empty
+
+            find('#manage').click
+            find('[rel*=add-collaborator]').click
+            obj = find('.groups').set(new_group.id)
+            click_button('Add')
+            expect(page).to have_link(new_group.name)
+          end
+
+          it 'adds the group user as a second collaborator' do
+            expect(page).to have_link("#{new_member.user.first_name} #{new_member.user.last_name}", href: user_path(new_member.user), count: 2)
+          end
+
+          context 'removing a group' do
+            before do
+              resource = GroupResource.where(resourceable_id: cookbook.id, group: new_group).first
+
+              # Finds the correct "Remove Group" link associated with new_group
+              find("a[href=\"#{destroy_group_collaborator_path(resourceable_type: resource.resourceable_type, resourceable_id: resource.resourceable_id, id: resource.group)}\"]").click
+            end
+
+            it 'leaves the collaborator not associated with the group' do
+              expect(page).to have_link("#{new_member.user.first_name} #{new_member.user.last_name}", href: user_path(new_member.user), count: 1)
+            end
+
+            it 'shows a warning that the user is still a collaborator' do
+              expect(page).to have_content("#{new_member.user.username} is still a collaborator")
+            end
+          end
+        end
       end
     end
   end

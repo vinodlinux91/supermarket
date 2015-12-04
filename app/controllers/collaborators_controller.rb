@@ -78,10 +78,14 @@ class CollaboratorsController < ApplicationController
 
     GroupResource.where(group: group, resourceable: resource).each { |group_resource| group_resource.destroy }
 
-    flash[:notice] = t('collaborator.group_removed', name: group.name) + "\n"
+    flash[:notice] = t('collaborator.group_removed', name: group.name) + ' '
 
     dup_user_collaborators(collaborator_users, resource).each do |collaborator|
-      flash[:notice] << "#{collaborator.user.username} was removed as a collaborator associated with #{group.name}, but is still a collaborator associated with #{collaborator.group.name}\n"
+      if collaborator.group.present?
+        flash[:notice] << "#{collaborator.user.username} is still a collaborator associated with #{collaborator.group.name}" + ' '
+      else
+        flash[:notice] << "#{collaborator.user.username} is still a collaborator on this #{params[:resourceable_type]}" ' '
+      end
     end
 
     redirect_to(
