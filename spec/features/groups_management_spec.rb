@@ -8,9 +8,25 @@ feature 'groups management' do
   end
 
   describe 'user visits their profile page' do
-    it 'shows the Groups link' do
-      visit user_path(user)
-      expect(page).to have_link('Groups')
+    context 'when the collaborator_groups feature is activated' do
+      before do
+        ROLLOUT.activate(:collaborator_groups)
+        visit user_path(user)
+      end
+
+      it 'shows the Groups link' do
+        expect(page).to have_link('Groups')
+      end
+    end
+
+    context 'when the collaborator_groups feature is not activated' do
+      before do
+        visit user_path(user)
+      end
+
+      it 'does not show the Groups link' do
+        expect(page).to_not have_link('Groups')
+      end
     end
   end
 

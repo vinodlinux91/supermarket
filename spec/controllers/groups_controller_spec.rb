@@ -1,6 +1,10 @@
 require 'spec_helper'
 
 describe GroupsController do
+  before do
+    ROLLOUT.activate(:collaborator_groups)
+  end
+
   describe 'GET #index' do
     let(:group1) { create(:group) }
     let(:group2) { create(:group) }
@@ -71,37 +75,54 @@ describe GroupsController do
         { name: 'My Group' }
       end
 
-      it 'saves the new group to the database' do
-        expect { post :create, group: group_input }.to change(Group, :count).by(1)
+      context 'when the groups feature is not active' do
+        before do
+          ROLLOUT.deactivate(:collaborator_groups)
+          expect(ROLLOUT.active?(:collaborator_groups)).to eq(false)
+        end
+
+        it 'does not save the new group to the database' do
+          expect { post :create, group: group_input }.to change(Group, :count).by(0)
+        end
       end
 
-      context 'after the save' do
-        let(:group) { create(:group) }
-
+      context 'when the groups feature is active' do
         before do
-          allow(Group).to receive(:new).and_return(group)
-          allow(group).to receive(:save).and_return(true)
+          expect(ROLLOUT.active?(:collaborator_groups)).to eq(true)
         end
 
-        it 'shows a success message' do
-          post :create, group: group_input
-          expect(flash[:notice]).to include('Group successfully created!')
+        it 'saves the new group to the database' do
+          expect { post :create, group: group_input }.to change(Group, :count).by(1)
         end
 
-        it 'rendirects to the group show template' do
-          post :create, group: group_input
-          expect(response).to redirect_to(group_path(assigns[:group]))
-        end
+        context 'after the save' do
+          let(:group) { create(:group) }
 
-        context 'group members' do
-          it 'adds the creating user as a member' do
-            post :create, group: group_input
-            expect(Group.last.members).to include(user)
+          before do
+            allow(Group).to receive(:new).and_return(group)
+            allow(group).to receive(:save).and_return(true)
           end
 
-          it 'sets the creating user as an admin member' do
+          it 'shows a success message' do
             post :create, group: group_input
-            expect(GroupMember.last.admin).to eq(true)
+            expect(flash[:notice]).to include('Group successfully created!')
+          end
+
+          it 'rendirects to the group show template' do
+            post :create, group: group_input
+            expect(response).to redirect_to(group_path(assigns[:group]))
+          end
+
+          context 'group members' do
+            it 'adds the creating user as a member' do
+              post :create, group: group_input
+              expect(Group.last.members).to include(user)
+            end
+
+            it 'sets the creating user as an admin member' do
+              post :create, group: group_input
+              expect(GroupMember.last.admin).to eq(true)
+            end
           end
         end
       end

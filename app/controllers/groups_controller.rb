@@ -1,4 +1,7 @@
 class GroupsController < ApplicationController
+
+  before_filter :collaborator_groups_feature_check
+
   def index
     @groups = Group.all
 
@@ -38,5 +41,12 @@ class GroupsController < ApplicationController
 
   def group_params
     params.require(:group).permit(:name)
+  end
+
+  def collaborator_groups_feature_check
+    unless ROLLOUT.active?(:collaborator_groups)
+      flash[:warning] = 'You must activate the collaborator_groups feature to create a group'
+      redirect_to new_group_path
+    end
   end
 end
