@@ -99,6 +99,8 @@ describe CollaboratorsController do
         let(:group_resource) { create(:group_resource, resourceable: cookbook, group: group) }
         let(:group_resources) { GroupResource.where(group: group, resourceable: cookbook) }
 
+        let(:collaborators) { Collaborator.where(group: group, resourceable: cookbook) }
+
         before do
           sign_in fanny
         end
@@ -129,11 +131,11 @@ describe CollaboratorsController do
         end
 
         it 'removes all collaborators associated with that group' do
-          collaborators = Collaborator.where(group: group, resourceable: cookbook)
           allow(Collaborator).to receive(:where).and_return(collaborators)
           expect(controller).to receive(:remove_group_collaborators).with(Collaborator.where(group: group, resourceable: cookbook))
           delete :destroy_group, id: group, resourceable_id: cookbook.id, resourceable_type: 'Cookbook'
         end
+
 
         it 'redirects back to the resource page' do
           delete :destroy_group, id: group, resourceable_id: cookbook.id, resourceable_type: 'Cookbook'
@@ -160,6 +162,12 @@ describe CollaboratorsController do
             expect(cookbook.collaborator_users).to include(group_2_member.user)
             delete :destroy_group, id: group, resourceable_id: cookbook.id, resourceable_type: 'Cookbook'
             expect(cookbook.collaborator_users).to include(group_2_member.user)
+          end
+
+          it 'finds all users associated with the collaborators' do
+            allow(Collaborator).to receive(:where).and_return(collaborators)
+            expect(collaborators).to receive(:map).and_return([group_member1.user])
+            delete :destroy_group, id: group, resourceable_id: cookbook.id, resourceable_type: 'Cookbook'
           end
 
           it 'shows a message to the user' do

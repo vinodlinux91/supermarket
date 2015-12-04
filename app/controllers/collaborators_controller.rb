@@ -72,13 +72,22 @@ class CollaboratorsController < ApplicationController
       params[:resourceable_id]
     )
 
-    remove_group_collaborators(Collaborator.where(resourceable: resource, group: group))
+    collaborator_users = group_collaborators(resource, group).map(&:user)
+
+
+    remove_group_collaborators(group_collaborators(resource, group))
+
 
     GroupResource.where(group: group, resourceable: resource).each { |group_resource| group_resource.destroy }
+
+
+    flash[:notice] = t('collaborator.group_removed', name: group.name)
+
+
+    end
+
     redirect_to(
-      resource,
-      notice: t('collaborator.group_removed',
-                name: group.name)
+      resource
     )
   end
 
@@ -122,5 +131,19 @@ class CollaboratorsController < ApplicationController
       :user_ids,
       :group_ids
     ])
+  end
+
+  def group_collaborators(resource, group)
+    Collaborator.where(resourceable: resource, group: group)
+  end
+
+  def dup_collaborators(group_collaborator_users, resource)
+    dup_collaborator_users = []
+
+    group_collaborator_users.each do |user|
+      dup_collaborator_users << user if resource.collaborator_users.include?(user)
+    end
+
+    dup_collaborator_users
   end
 end
