@@ -26,7 +26,7 @@ class GroupsController < ApplicationController
       flash[:notice] = 'Group successfully created!'
       redirect_to group_path(@group)
     else
-      flash[:warning] = 'An error has occurred'
+      flash[:warning] = "An error has occurred #{@group.errors.full_messages.join(', ')}"
       redirect_to new_group_path
     end
   end
