@@ -21,4 +21,11 @@
     <div id="group-members" class="reveal-modal small" data-reveal>
       <%= render 'group_members/add', group: @group %>
     </div>
+
+    <br />
+    <br />
+    <h2>Resources associated with this group:</h2>
+    <% group_resourceables(@group).each do |resource| %>
+      <%= resource.name %><br />
+    <% end %>
 </div>
