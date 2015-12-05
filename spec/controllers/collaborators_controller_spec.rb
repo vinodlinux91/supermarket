@@ -173,7 +173,7 @@ describe CollaboratorsController do
           it 'shows a message to the user' do
             delete :destroy_group, id: group, resourceable_id: cookbook.id, resourceable_type: 'Cookbook'
             expect(flash[:notice]).to include(
-              "#{group_member1.user.username} was removed as a collaborator associated with #{group.name}, but is still a collaborator associated with #{group_2.name}"
+              "#{group_member1.user.username} is still a collaborator associated with #{group_2.name}"
             )
           end
         end

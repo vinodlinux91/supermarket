@@ -48,6 +48,7 @@ describe 'cookbook collaboration' do
 
     context 'when the collaborator_groups feature is not active' do
       before do
+        ROLLOUT.deactivate(:collaborator_groups)
         expect(ROLLOUT.active?(:collaborator_groups)).to eq(false)
       end
 
