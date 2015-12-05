@@ -21,6 +21,8 @@ feature 'groups management' do
 
     context 'when the collaborator_groups feature is not activated' do
       before do
+        ROLLOUT.deactivate(:collaborator_groups)
+        expect(ROLLOUT.active?(:collaborator_groups)).to eq(false)
         visit user_path(user)
       end
 
@@ -32,6 +34,7 @@ feature 'groups management' do
 
   describe 'user clicks the Groups link' do
     before do
+      ROLLOUT.activate(:collaborator_groups)
       visit user_path(user)
       click_link('Groups')
     end
