@@ -25,7 +25,7 @@
     <br />
     <br />
     <h2>Resources associated with this group:</h2>
-    <% group_resourceables(@group).each do |resource| %>
-      <%= resource.name %><br />
-    <% end %>
+    <ul class="listing" id="resources">
+      <%= render partial: 'resource', collection: group_resourceables(@group) %>
+    </ul>
 </div>
