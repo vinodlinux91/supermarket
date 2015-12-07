@@ -3,6 +3,10 @@ module GroupsHelper
     group.group_members.where(user_id: user.id, admin: true).present?
   end
 
+  def admin_members(group)
+    group.group_members.where(admin: true)
+  end
+
   def group_resourceables(group)
     resourceables = []
     group.group_resources.each do |resource|

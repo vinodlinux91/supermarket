@@ -2,20 +2,19 @@ require 'spec_helper'
 
 describe GroupsHelper do
   let(:group) { create(:group) }
+  let(:admin_user) { create(:user) }
+
+  let!(:admin_member) do
+    create(:admin_group_member, user: admin_user, group: group)
+  end
+
+  let(:user) { create(:user) }
+
+  let!(:member) do
+    create(:group_member, user: user, group: group)
+  end
 
   describe '#admin_member?' do
-    let(:admin_user) { create(:user) }
-
-    let!(:admin_member) do
-      create(:admin_group_member, user: admin_user, group: group)
-    end
-
-    let(:user) { create(:user) }
-
-    let!(:member) do
-      create(:group_member, user: user, group: group)
-    end
-
     context 'when then user is an admin member' do
       it 'returns true' do
         expect(helper.admin_member?(admin_user, group)).to eq(true)
@@ -26,6 +25,13 @@ describe GroupsHelper do
       it 'returns false' do
         expect(helper.admin_member?(user, group)).to eq(false)
       end
+    end
+  end
+
+  describe '#admin_members' do
+    it 'returns the admin members' do
+      expect(helper.admin_members(group)).to include(admin_member)
+      expect(helper.admin_members(group)).to_not include(member)
     end
   end
 
