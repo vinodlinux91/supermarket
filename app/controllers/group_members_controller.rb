@@ -1,6 +1,9 @@
 class GroupMembersController < ApplicationController
   include CollaboratorProcessing
 
+  before_action :find_group_member, only: [:destroy, :make_admin]
+  before_action :check_admin_member_present, only: :destroy
+
   def create
     if group_member_params[:user_ids].present?
       user_ids = group_member_params[:user_ids].split(',')
@@ -32,7 +35,6 @@ class GroupMembersController < ApplicationController
   end
 
   def destroy
-    @group_member = GroupMember.find(params[:id])
     if @group_member.destroy
 
       group_resources(@group_member).each do |resource|
@@ -51,8 +53,6 @@ class GroupMembersController < ApplicationController
   end
 
   def make_admin
-    @group_member = GroupMember.find(params[:id])
-
     if current_user_admin?
       @group_member.admin = true
       @group_member.save
@@ -76,5 +76,18 @@ class GroupMembersController < ApplicationController
 
   def group_resources(group_member)
     group_member.group.group_resources.collect {|group_resource| group_resource.resourceable}
+  end
+
+  def find_group_member
+    @group_member = GroupMember.find(params[:id])
+  end
+
+  def check_admin_member_present
+    if @group_member.admin?
+      unless @group_member.group.group_members.where(admin: true).count > 1
+        flash[:warning] = 'Member could not be removed because a group must have at least one admin member'
+        redirect_to group_path(@group_member.group)
+      end
+    end
   end
 end

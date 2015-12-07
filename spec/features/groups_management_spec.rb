@@ -174,24 +174,44 @@ feature 'groups management' do
                 end
               end
             end
-          end
 
-            context 'adding multiple members' do
-              let(:existing_user2) { create(:user) }
-              let(:existing_user3) { create(:user) }
+            context 'removing an admin member' do
+              context 'when the current user is the only admin member' do
+                before do
+                  within('ul#admin_members') do
+                    click_link('Remove')
+                  end
+                end
 
-              before do
-                find(:xpath, "//input[@id='user_ids']").set "#{existing_user2.id}, #{existing_user3.id}"
-                click_button('Add Member')
-              end
+                it 'does not remove the admin member' do
+                  within('ul#admin_members') do
+                    expect(page).to have_content(user.username)
+                  end
+                end
 
-              it 'shows both members' do
-                within('ul#members') do
-                  expect(page).to have_content(existing_user2.username)
-                  expect(page).to have_content(existing_user3.username)
+                it 'shows an error' do
+                  expect(page).to have_content('Member could not be removed because a group must have at least one admin member')
                 end
               end
             end
+          end
+
+          context 'adding multiple members' do
+            let(:existing_user2) { create(:user) }
+            let(:existing_user3) { create(:user) }
+
+            before do
+              find(:xpath, "//input[@id='user_ids']").set "#{existing_user2.id}, #{existing_user3.id}"
+              click_button('Add Member')
+            end
+
+            it 'shows both members' do
+              within('ul#members') do
+                expect(page).to have_content(existing_user2.username)
+                expect(page).to have_content(existing_user3.username)
+              end
+            end
+          end
 
         end
 

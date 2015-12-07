@@ -238,11 +238,11 @@ describe GroupMembersController do
       end
 
       it 'removes the member from the GroupMember' do
-        expect { delete :destroy, id: group_member.id }.to change(GroupMember, :count).by(-1)
+        expect { delete :destroy, id: other_group_member.id }.to change(GroupMember, :count).by(-1)
       end
 
       it 'shows a success message' do
-        delete :destroy, id: group_member.id
+        delete :destroy, id: other_group_member.id
         expect(flash[:notice]).to include('Member successfully removed')
       end
 
