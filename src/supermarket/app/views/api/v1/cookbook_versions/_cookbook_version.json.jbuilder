@@ -6,12 +6,12 @@ json.cookbook api_v1_cookbook_url(cookbook)
 json.file api_v1_cookbook_version_download_url(cookbook_version.cookbook, cookbook_version)
 json.quality do
   json.foodcritic do
-    json.failed @cookbook.foodcritic_failure
-    json.feedback @cookbook.foodcritic_feedback
+    json.failed cookbook_version.foodcritic_failure
+    json.feedback cookbook_version.foodcritic_feedback
   end
   json.collaborator do
-    json.failed @cookbook.collaborator_failure
-    json.feedback @cookbook.collaborator_feedback
+    json.failed cookbook_version.collaborator_failure
+    json.feedback cookbook_version.collaborator_feedback
   end
 end
 json.set! :dependencies do
