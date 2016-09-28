@@ -3,15 +3,11 @@ Paperclip.interpolates(:compatible_id) do |attachment, _style|
 end
 
 ':class/:attachment/:compatible_id/:style/:basename.:extension'.tap do |path|
-  configured = %w(S3_BUCKET S3_ACCESS_KEY_ID S3_SECRET_ACCESS_KEY S3_REGION).all? do |key|
-    ENV[key].present?
-  end
+  if Supermarket::S3ConfigAudit.use_s3?(ENV)
+    if ENV['S3_PATH'].present?
+      path = "#{ENV['S3_PATH']}/#{path}"
+    end
 
-  if ENV['S3_PATH'].present?
-    path = "#{ENV['S3_PATH']}/#{path}"
-  end
-
-  if configured
     options = {
       storage: 's3',
       s3_credentials: {
