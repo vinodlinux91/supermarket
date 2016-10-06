@@ -21,7 +21,7 @@ end
       s3_region: ENV['S3_REGION']
     }
 
-    if ENV['S3_PRIVATE_OBJECTS'].present?
+    if ENV['S3_PRIVATE_OBJECTS'] == 'true'
       options = options.merge(
         s3_permissions: :private
       )
