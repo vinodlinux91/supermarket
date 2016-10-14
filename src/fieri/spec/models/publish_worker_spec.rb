@@ -8,7 +8,7 @@ describe CollaboratorWorker do
 
   before do
     stub_request(:post, "#{ENV['FIERI_SUPERMARKET_ENDPOINT']}/api/v1/cookbook-versions/publish_evaluation").
-      to_return(:status => 200, :body => "", :headers => {})
+      to_return(status: 200, body: '', headers: {})
 
     allow(Net::HTTP).to receive(:get).and_return(cookbook_response)
   end
