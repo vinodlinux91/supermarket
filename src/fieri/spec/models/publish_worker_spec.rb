@@ -87,17 +87,62 @@ describe CollaboratorWorker do
     end
 
     context 'when the cookbook is not deprecated' do
-      it 'indicates the publish metric passed'
+      let(:cookbook_response) { File.read('spec/support/cookbook_non_deprecated_fixture.json') }
+
+      before do
+        allow(Net::HTTP).to receive(:get).and_return(cookbook_response)
+      end
+
+      it 'indicates the publish metric passed' do
+        pw.perform(cookbook_name)
+
+        assert_requested(:post, "#{ENV['FIERI_SUPERMARKET_ENDPOINT']}/api/v1/cookbook-versions/publish_evaluation", times: 1) do |req|
+          expect(req.body).to include('publish_failure=false')
+        end
+      end
     end
   end
 
   context 'checking whether the cookbook is up for adoption' do
     context 'when the cookbook is up for adoption' do
+      let(:cookbook_response) { File.read('spec/support/cookbook_up_for_adoption_fixture.json') }
 
+      before do
+        allow(Net::HTTP).to receive(:get).and_return(cookbook_response)
+      end
+
+      it 'indicates the publish metric failed' do
+        pw.perform(cookbook_name)
+
+        assert_requested(:post, "#{ENV['FIERI_SUPERMARKET_ENDPOINT']}/api/v1/cookbook-versions/publish_evaluation", times: 1) do |req|
+          expect(req.body).to include('publish_failure=true')
+        end
+      end
+
+      it 'includes a message in the feedback' do
+        pw.perform(cookbook_name)
+
+        assert_requested(:post, "#{ENV['FIERI_SUPERMARKET_ENDPOINT']}/api/v1/cookbook-versions/publish_evaluation", times: 1) do |req|
+          expect(req.body).to include('publish_feedback')
+          expect(req.body).to include("#{cookbook_name}+is+up+for+adoption")
+        end
+      end
     end
 
     context 'when the cookbook is not up for adoption' do
+      let(:cookbook_response) { File.read('spec/support/cookbook_not_up_for_adoption_fixture.json') }
 
+      before do
+        allow(Net::HTTP).to receive(:get).and_return(cookbook_response)
+      end
+
+      it 'indicates the publish metric passed' do
+        pw.perform(cookbook_name)
+
+        assert_requested(:post, "#{ENV['FIERI_SUPERMARKET_ENDPOINT']}/api/v1/cookbook-versions/publish_evaluation", times: 1) do |req|
+          expect(req.body).to include('publish_failure=false')
+        end
+      end
     end
   end
 end

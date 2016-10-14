@@ -23,8 +23,15 @@ class PublishWorker
       deprecated_failure = false
     end
 
-    if exists_failure == true || deprecated_failure == true
+    if parsed['up_for_adoption'] == true
+      adoption_failure = true
+    else
+      adoption_failure = false
+    end
+
+    if exists_failure == true || deprecated_failure == true || adoption_failure == true
       failure = true
+      publish_feedback += "#{cookbook_name} is up for adoption"
     else
       failure = false
     end
