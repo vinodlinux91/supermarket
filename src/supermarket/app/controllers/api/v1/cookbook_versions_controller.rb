@@ -92,6 +92,33 @@ class Api::V1::CookbookVersionsController < Api::V1Controller
     )
   end
 
+
+  #
+  # POST /api/v1/cookbook-versions/publish_evaluation
+  #
+  # Take the publish evaluation results from Fieri and store them as a
+  # metric result
+  #
+  # If the +CookbookVersion+ does not exist, render a 404 not_found.
+  #
+  # If the request is unauthorized, render unauthorized.
+  #
+  # This endpoint expects +cookbook_name+, +cookbook_version+,
+  # +publish_failure+, +publish_feedback+, and +fieri_key+.
+  #
+  def publish_evaluation
+    cookbook_version = Cookbook.with_name(params[:cookbook_name]).first.latest_cookbook_version
+
+    create_metric(
+      cookbook_version,
+      QualityMetric.publish_metric,
+      params[:publish_failure],
+      params[:publish_feedback]
+    )
+
+    head 200
+  end
+
   private
 
   def require_evaluation_params
@@ -108,6 +135,7 @@ class Api::V1::CookbookVersionsController < Api::V1Controller
   end
 
   def create_metric(cookbook_version, quality_metric, failure, feedback)
+    puts QualityMetric.publish_metric
     MetricResult.create!(
       cookbook_version: cookbook_version,
       quality_metric: quality_metric,
