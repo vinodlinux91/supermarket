@@ -25,7 +25,11 @@ class CookbookVersionsController < ApplicationController
     @collaborators = @cookbook.collaborators
     @supported_platforms = @version.supported_platforms
     @owner_collaborator = Collaborator.new resourceable: @cookbook, user: @owner
-    @metric_results = @version.metric_results
+
+    @public_metric_results = []
+    @admin_metric_results = []
+
+    classify_metrics(@version.metric_results)
   end
 
   private
@@ -33,5 +37,15 @@ class CookbookVersionsController < ApplicationController
   def set_cookbook_and_version
     @cookbook = Cookbook.with_name(params[:cookbook_id]).first!
     @version = @cookbook.get_version!(params[:version])
+  end
+
+  def classify_metrics(metric_results)
+    metric_results.each do |result|
+      if result.quality_metric.admin_only?
+        @admin_metric_results << result
+      else
+        @public_metric_results << result
+      end
+    end
   end
 end

@@ -85,7 +85,8 @@ class CookbooksController < ApplicationController
     @cookbook_versions = @cookbook.sorted_cookbook_versions
     @collaborators = @cookbook.collaborators
     @supported_platforms = @cookbook.supported_platforms
-    @metric_results = @cookbook.latest_cookbook_version.metric_results
+
+    classify_metrics(@cookbook.latest_cookbook_version.metric_results)
 
     respond_to do |format|
       format.atom
@@ -306,6 +307,19 @@ class CookbooksController < ApplicationController
 
     if params[:badges].present? && !params[:badges][0].blank?
       @cookbooks = @cookbooks.filter_badges(params[:badges])
+    end
+  end
+
+  def classify_metrics(metric_results)
+    @public_metric_results = []
+    @admin_metric_results = []
+
+    metric_results.each do |result|
+      if result.quality_metric.admin_only?
+        @admin_metric_results << result
+      else
+        @public_metric_results << result
+      end
     end
   end
 end
