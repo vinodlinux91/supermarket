@@ -12,17 +12,17 @@ class PublishWorker
 
     unless cookbook_exists?(parsed, cookbook_name)
       failure = true
-      publish_feedback += "#{cookbook_name} not found in Supermarket"
+      publish_feedback += "#{cookbook_name} not found in Supermarket\n"
     end
 
     unless cookbook_not_deprecated?(parsed)
       failure = true
-      publish_feedback += "#{cookbook_name} is deprecated"
+      publish_feedback += "#{cookbook_name} is deprecated\n"
     end
 
     unless cookbook_not_for_adoption?(parsed)
       failure = true
-      publish_feedback += "#{cookbook_name} is up for adoption"
+      publish_feedback += "#{cookbook_name} is up for adoption\n"
     end
 
     Net::HTTP.post_form(
