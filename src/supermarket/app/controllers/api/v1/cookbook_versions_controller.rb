@@ -1,7 +1,7 @@
 class Api::V1::CookbookVersionsController < Api::V1Controller
-  before_action :check_cookbook_name_present, only: [:foodcritic_evaluation, :collaborators_evaluation]
-  before_action :check_authorization, only: [:foodcritic_evaluation, :collaborators_evaluation]
-  before_action :find_cookbook_version, only: [:foodcritic_evaluation, :collaborators_evaluation]
+  before_action :check_cookbook_name_present, only: [:foodcritic_evaluation, :collaborators_evaluation, :publish_evaluation]
+  before_action :check_authorization, only: [:foodcritic_evaluation, :collaborators_evaluation, :publish_evaluation]
+  before_action :find_cookbook_version, only: [:foodcritic_evaluation, :collaborators_evaluation, :publish_evaluation]
   #
   # GET /api/v1/cookbooks/:cookbook/versions/:version
   #
@@ -92,7 +92,6 @@ class Api::V1::CookbookVersionsController < Api::V1Controller
     )
   end
 
-
   #
   # POST /api/v1/cookbook-versions/publish_evaluation
   #
@@ -107,10 +106,8 @@ class Api::V1::CookbookVersionsController < Api::V1Controller
   # +publish_failure+, +publish_feedback+, and +fieri_key+.
   #
   def publish_evaluation
-    cookbook_version = Cookbook.with_name(params[:cookbook_name]).first.latest_cookbook_version
-
     create_metric(
-      cookbook_version,
+      @cookbook_version,
       QualityMetric.publish_metric,
       params[:publish_failure],
       params[:publish_feedback]
@@ -135,7 +132,6 @@ class Api::V1::CookbookVersionsController < Api::V1Controller
   end
 
   def create_metric(cookbook_version, quality_metric, failure, feedback)
-    puts QualityMetric.publish_metric
     MetricResult.create!(
       cookbook_version: cookbook_version,
       quality_metric: quality_metric,

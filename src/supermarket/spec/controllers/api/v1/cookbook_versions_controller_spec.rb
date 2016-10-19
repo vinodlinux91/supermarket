@@ -307,7 +307,8 @@ describe Api::V1::CookbookVersionsController do
 
   describe '#publish_evaluation' do
     let(:cookbook) { create(:cookbook) }
-    let(:version) { create(:cookbook_version, cookbook: cookbook) }
+    let!(:version) { create(:cookbook_version, cookbook: cookbook) }
+    let!(:quality_metric) { create(:publish_metric) }
 
     context 'the request is authorized' do
       context 'the required params are provided' do
@@ -324,9 +325,6 @@ describe Api::V1::CookbookVersionsController do
         end
 
         it "creates a publish metric" do
-          quality_metric = create(:publish_metric)
-puts 'one'
-puts MetricResult.all.count
           post(
             :publish_evaluation,
             cookbook_name: cookbook.name,
@@ -335,22 +333,31 @@ puts MetricResult.all.count
             fieri_key: 'YOUR_FIERI_KEY',
             format: :json
           )
-puts 'two'
-puts MetricResult.all.count
 
           version.reload
-          puts version.metric_results.inspect
-
           expect(version.metric_results.where(quality_metric: quality_metric).count).to eq(1)
+        end
+
+        it 'finds the correct cookbook version' do
+          post(
+            :publish_evaluation,
+            cookbook_name: cookbook.name,
+            publish_failure: false,
+            publish_feedback: 'This cookbook does not exist.',
+            fieri_key: 'YOUR_FIERI_KEY',
+            format: :json
+          )
+
+          expect(assigns[:cookbook_version]).to eq(version)
         end
       end
 
       context 'the required params are not provided' do
-        xit 'returns a 400' do
+        it 'returns a 400' do
           post(
-            :collaborators_evaluation,
-            collaborator_failure: false,
-            collaborator_feedback: '',
+            :publish_evaluation,
+            publish_failure: false,
+            publish_feedback: '',
             fieri_key: 'YOUR_FIERI_KEY',
             format: :json
           )
@@ -368,12 +375,12 @@ puts MetricResult.all.count
     end
 
     context 'the request is not authorized' do
-      xit 'renders a 401 error about unauthorized post' do
+      it 'renders a 401 error about unauthorized post' do
         post(
-          :collaborators_evaluation,
+          :publish_evaluation,
           cookbook_name: cookbook.name,
-          collaborator_failure: true,
-          collaborator_feedback: 'E066',
+          publish_failure: false,
+          publish_feedback: '',
           fieri_key: 'not_the_key',
           format: :json
         )
