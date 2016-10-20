@@ -22,7 +22,7 @@ unless(QualityMetric.where(name: 'Collaborator Number').any?)
 end
 
 unless(QualityMetric.where(name: 'Publish').any?)
-  QualityMetric.create!(name: 'Publish')
+  QualityMetric.create!(name: 'Publish', admin_only: true)
 end
 
 Icla.where(version: ENV['ICLA_VERSION']).
